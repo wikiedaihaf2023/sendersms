@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MessageFlow Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #f3f7ff;
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1d4ed8 45%, #7c3aed 100%);
+            --panel: rgba(255, 255, 255, 0.92);
+            --panel-border: rgba(148, 163, 184, 0.2);
+            --primary: #1d4ed8;
+            --primary-dark: #1e3a8a;
+            --primary-soft: #dbeafe;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --warning: #f59e0b;
+            --text: #0f172a;
+            --muted: #475569;
+            --shadow: 0 25px 60px rgba(15, 23, 42, 0.22);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            padding: 40px 20px;
+            font-family: 'Noto Kufi Arabic', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .shell {
+            width: min(100%, 1200px);
+            display: grid;
+            grid-template-columns: 1.2fr 0.95fr;
+            gap: 24px;
+            align-items: stretch;
+        }
+
+        .hero,
+        .panel {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid var(--panel-border);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+        }
+
+        .hero {
+            padding: 34px 32px 28px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 620px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            inset: 0 auto auto 0;
+            width: 220px;
+            height: 220px;
+            background: radial-gradient(circle, rgba(59,130,246,0.18), transparent 65%);
+            transform: translate(-25%, -25%);
+        }
+
+        .brand-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            z-index: 1;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(29, 78, 216, 0.08);
+            color: var(--primary-dark);
+            border: 1px solid rgba(29, 78, 216, 0.12);
+            border-radius: 999px;
+            padding: 8px 14px;
+            font-size: 12px;
+            font-weight: 700;
+            width: fit-content;
+        }
+
+        .github-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #0f172a;
+            text-decoration: none;
+            font-size: 0.86rem;
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 999px;
+            padding: 8px 12px;
+            transition: transform 0.2s ease;
+        }
+
+        .github-link:hover {
+            transform: translateY(-1px);
+        }
+
+        .brand-mark {
+            width: 46px;
+            height: 46px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            border-radius: 14px;
+            box-shadow: 0 16px 28px rgba(79, 70, 229, 0.25);
+        }
+
+        .brand-mark svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+
+        .hero-body {
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            margin: 20px 0 10px;
+            font-size: clamp(2.1rem, 3vw, 3.2rem);
+            line-height: 1.35;
+            color: var(--text);
+        }
+
+        .subtitle {
+            margin: 0 0 26px;
+            color: var(--muted);
+            font-size: 1.05rem;
+            line-height: 2;
+            max-width: 560px;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 28px;
+            display: grid;
+            gap: 12px;
+        }
+
+        .feature-list li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #1e293b;
+            font-weight: 600;
+        }
+
+        .feature-list li::before {
+            content: '✓';
+            width: 28px;
+            height: 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+            color: var(--success);
+            font-weight: 900;
+            box-shadow: inset 0 0 0 1px rgba(22,163,74,0.08);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(120px, 1fr));
+            gap: 14px;
+            margin-top: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-card {
+            background: linear-gradient(180deg, #ffffff 0%, #eef4ff 100%);
+            border: 1px solid #dfeafc;
+            border-radius: 18px;
+            padding: 18px 12px 16px;
+            text-align: center;
+        }
+
+        .stat-number {
+            display: block;
+            font-size: 1.65rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+        }
+
+        .stat-label {
+            display: block;
+            margin-top: 6px;
+            color: var(--muted);
+            font-size: 0.8rem;
+        }
+
+        .panel {
+            padding: 28px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .panel-header h2 {
+            margin: 0;
+            font-size: 1.55rem;
+            color: var(--text);
+        }
+
+        .mini-tag {
+            background: linear-gradient(135deg, #f8fafc, #eff6ff);
+            color: var(--primary-dark);
+            border: 1px solid rgba(59,130,246,0.15);
+            border-radius: 999px;
+            padding: 7px 12px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        form {
+            display: grid;
+            gap: 18px;
+        }
+
+        .form-group {
+            display: grid;
+            gap: 8px;
+        }
+
+        label {
+            font-weight: 700;
+            color: var(--text);
+            font-size: 0.96rem;
+        }
+
+        .file-input,
+        .select-box,
+        .provider-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px dashed #cbd5e1;
+            border-radius: 14px;
+            background: #f8fafc;
+            color: var(--muted);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            font: inherit;
+        }
+
+        .file-input:focus,
+        .select-box:focus,
+        .provider-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(29, 78, 216, 0.08);
+        }
+
+        .provider-settings {
+            display: none;
+            margin-top: 12px;
+            border: 1px solid #dfeafc;
+            border-radius: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fbff);
+            padding: 16px;
+        }
+
+        .provider-settings.active {
+            display: block;
+        }
+
+        .provider-panel {
+            display: none;
+            gap: 14px;
+            grid-template-columns: repeat(2, minmax(160px, 1fr));
+        }
+
+        .provider-panel.active {
+            display: grid;
+        }
+
+        .provider-field {
+            display: grid;
+            gap: 8px;
+        }
+
+        .provider-field label {
+            font-size: 0.82rem;
+            color: var(--muted);
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(140px, 1fr));
+            gap: 12px;
+            margin-top: 4px;
+        }
+
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc);
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px 14px;
+            color: #334155;
+            font-weight: 600;
+        }
+
+        .check-item input {
+            accent-color: var(--primary);
+            width: 16px;
+            height: 16px;
+        }
+
+        .primary-btn {
+            border: none;
+            border-radius: 14px;
+            padding: 16px 18px;
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            color: white;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 16px 32px rgba(29, 78, 216, 0.28);
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .analytics {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 18px;
+            margin-top: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .metric-box,
+        .chart-box {
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 18px 16px;
+        }
+
+        .metric-box h3,
+        .chart-box h3 {
+            margin: 0 0 16px;
+            font-size: 1rem;
+            color: var(--text);
+        }
+
+        .bars {
+            display: flex;
+            align-items: end;
+            gap: 10px;
+            height: 110px;
+            padding-top: 12px;
+        }
+
+        .bar {
+            flex: 1;
+            border-radius: 10px 10px 0 0;
+            background: linear-gradient(180deg, #60a5fa, #2563eb);
+            min-height: 15px;
+            position: relative;
+        }
+
+        .bar:nth-child(2) { background: linear-gradient(180deg, #a78bfa, #7c3aed); }
+        .bar:nth-child(3) { background: linear-gradient(180deg, #22c55e, #16a34a); }
+        .bar:nth-child(4) { background: linear-gradient(180deg, #fbbf24, #f59e0b); }
+
+        .donut-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 120px;
+            position: relative;
+        }
+
+        .donut {
+            width: 94px;
+            height: 94px;
+            border-radius: 50%;
+            background: conic-gradient(var(--primary) 0 68%, #e2e8f0 68% 100%);
+            position: relative;
+        }
+
+        .donut::after {
+            content: "68%";
+            position: absolute;
+            inset: 12px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: var(--primary-dark);
+        }
+
+        .result {
+            display: none;
+            margin-top: 18px;
+            border-radius: 14px;
+            padding: 14px 16px;
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        .result.success {
+            display: block;
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            color: #065f46;
+        }
+
+        .result.error {
+            display: block;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
+
+        .result.info {
+            display: block;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1d4ed8;
+        }
+
+        .report-box {
+            display: none;
+            margin-top: 18px;
+            background: #fff;
+            border: 1px solid #dfeafc;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+        }
+
+        .report-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 18px;
+            background: linear-gradient(135deg, #eff6ff, #f8fafc);
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .report-header h3 {
+            margin: 0;
+            font-size: 1rem;
+            color: var(--text);
+        }
+
+        .report-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .print-btn,
+        .excel-btn {
+            border: none;
+            border-radius: 10px;
+            color: white;
+            padding: 10px 14px;
+            font-family: inherit;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .print-btn {
+            background: var(--primary);
+        }
+
+        .excel-btn {
+            background: var(--success);
+        }
+
+        .report-table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 700px;
+        }
+
+        th, td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: right;
+            vertical-align: top;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background: #f8fafc;
+            color: var(--text);
+            font-weight: 800;
+        }
+
+        td {
+            color: #334155;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .status-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-failed {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-dry {
+            background: #e0f2fe;
+            color: #0f766e;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .shell {
+                display: block;
+                width: 100%;
+            }
+
+            .hero, .panel {
+                box-shadow: none;
+                border: none;
+            }
+
+            .print-btn {
+                display: none;
+            }
+        }
+
+        @media (max-width: 820px) {
+            .shell {
+                grid-template-columns: 1fr;
+            }
+
+            .hero {
+                min-height: auto;
+            }
+
+            .analytics {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="shell">
+        <section class="hero">
+            <div class="brand-row">
+                <div class="badge">
+                    <span class="brand-mark" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H17.5A2.5 2.5 0 0 1 20 6.5V10A2.5 2.5 0 0 1 17.5 12.5H14L12.7 15.8A1 1 0 0 1 11.7 16.5H10.3a1 1 0 0 1-.98-1.2L11 12.5H6.5A2.5 2.5 0 0 1 4 10V6.5Zm2.5-.5a.5.5 0 0 0-.5.5V10a.5.5 0 0 0 .5.5H17.5a.5.5 0 0 0 .5-.5V6.5a.5.5 0 0 0-.5-.5H6.5Z"/>
+                        </svg>
+                    </span>
+                    MessageFlow Pro
+                </div>
+                <a class="github-link" href="https://github.com/wikiedaihaf2023/sendersms" target="_blank" rel="noopener noreferrer">
+                    GitHub: wikiedaihaf2023/sendersms
+                </a>
+            </div>
+
+            <div class="hero-body">
+                <h1>إرسال رسائل جماعية<br>بأداء مؤسسي احترافي</h1>
+                <p class="subtitle">
+                    منصة متكاملة لإدارة إرسال رسائل SMS وواتس آب إلى العملاء عبر ملفات Excel، مع مراقبة الجودة، التحقق من الأرقام، وتنظيم الحملات بسرعة وسهولة.
+                </p>
+
+                <ul class="feature-list">
+                    <li>تحليل وتصفية الأرقام قبل الإرسال</li>
+                    <li>إرسال SMS وواتس آب عبر إعدادات موحدة</li>
+                    <li>مراقبة دقيقة لنتائج الحملات والعمليات</li>
+                    <li>واجهة احترافية مناسبة للفرق التشغيلية</li>
+                </ul>
+
+                <div class="stats">
+                    <div class="stat-card">
+                        <span class="stat-number">2</span>
+                        <span class="stat-label">قنوات إرسال</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">99%</span>
+                        <span class="stat-label">دقة التحقق</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">24/7</span>
+                        <span class="stat-label">إدارة مستمرة</span>
+                    </div>
+                </div>
+
+                <div class="analytics">
+                    <div class="metric-box">
+                        <h3>إحصائيات اليوم</h3>
+                        <div class="bars" aria-label="إحصائيات اليوم">
+                            <div class="bar" style="height: 52%"></div>
+                            <div class="bar" style="height: 73%"></div>
+                            <div class="bar" style="height: 84%"></div>
+                            <div class="bar" style="height: 96%"></div>
+                        </div>
+                    </div>
+
+                    <div class="chart-box">
+                        <h3>معدل الإنجاز</h3>
+                        <div class="donut-wrap">
+                            <div class="donut" aria-label="معدل الإنجاز 68%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-header">
+                <h2>إدارة الإرسال</h2>
+                <span class="mini-tag">نظام جاهز</span>
+            </div>
+
+            <form id="uploadForm">
+                <div class="form-group">
+                    <label for="excel_file">اختر ملف Excel</label>
+                    <input class="file-input" type="file" id="excel_file" name="excel_file" accept=".xlsx,.xls" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="sms_provider">مزود SMS</label>
+                    <select class="select-box" id="sms_provider" name="sms_provider" aria-label="مزود SMS">
+                        <option value="yemen_mobile" selected>يمن موبايل</option>
+                        <option value="sapa_phone">سبا فون</option>
+                        <option value="you">YOU</option>
+                        <option value="twilio">Twilio</option>
+                    </select>
+                </div>
+
+                <div class="provider-settings active" id="providerSettingsBox">
+                    <div class="provider-panel active" data-provider="yemen_mobile">
+                        <div class="provider-field">
+                            <label for="yemen_mobile_url">رابط Yemen Mobile</label>
+                            <input class="provider-input" type="text" id="yemen_mobile_url" name="yemen_mobile_url" placeholder="https://.../api/send">
+                        </div>
+                        <div class="provider-field">
+                            <label for="yemen_mobile_username">Username</label>
+                            <input class="provider-input" type="text" id="yemen_mobile_username" name="yemen_mobile_username" placeholder="Username">
+                        </div>
+                        <div class="provider-field">
+                            <label for="yemen_mobile_password">Password</label>
+                            <input class="provider-input" type="password" id="yemen_mobile_password" name="yemen_mobile_password" placeholder="Password">
+                        </div>
+                        <div class="provider-field">
+                            <label for="yemen_mobile_sender">Sender</label>
+                            <input class="provider-input" type="text" id="yemen_mobile_sender" name="yemen_mobile_sender" placeholder="MessageFlow">
+                        </div>
+                        <div class="provider-field" style="grid-column: 1 / -1;">
+                            <label for="yemen_mobile_api_key">API Key</label>
+                            <input class="provider-input" type="text" id="yemen_mobile_api_key" name="yemen_mobile_api_key" placeholder="API Key (اختياري)">
+                        </div>
+                    </div>
+
+                    <div class="provider-panel" data-provider="sapa_phone">
+                        <div class="provider-field">
+                            <label for="sapa_phone_url">رابط Sapa Phone</label>
+                            <input class="provider-input" type="text" id="sapa_phone_url" name="sapa_phone_url" placeholder="https://.../api/send">
+                        </div>
+                        <div class="provider-field">
+                            <label for="sapa_phone_username">Username</label>
+                            <input class="provider-input" type="text" id="sapa_phone_username" name="sapa_phone_username" placeholder="Username">
+                        </div>
+                        <div class="provider-field">
+                            <label for="sapa_phone_password">Password</label>
+                            <input class="provider-input" type="password" id="sapa_phone_password" name="sapa_phone_password" placeholder="Password">
+                        </div>
+                        <div class="provider-field">
+                            <label for="sapa_phone_sender">Sender</label>
+                            <input class="provider-input" type="text" id="sapa_phone_sender" name="sapa_phone_sender" placeholder="MessageFlow">
+                        </div>
+                        <div class="provider-field" style="grid-column: 1 / -1;">
+                            <label for="sapa_phone_api_key">API Key</label>
+                            <input class="provider-input" type="text" id="sapa_phone_api_key" name="sapa_phone_api_key" placeholder="API Key (اختياري)">
+                        </div>
+                    </div>
+
+                    <div class="provider-panel" data-provider="you">
+                        <div class="provider-field">
+                            <label for="you_url">رابط YOU</label>
+                            <input class="provider-input" type="text" id="you_url" name="you_url" placeholder="https://.../api/send">
+                        </div>
+                        <div class="provider-field">
+                            <label for="you_username">Username</label>
+                            <input class="provider-input" type="text" id="you_username" name="you_username" placeholder="Username">
+                        </div>
+                        <div class="provider-field">
+                            <label for="you_password">Password</label>
+                            <input class="provider-input" type="password" id="you_password" name="you_password" placeholder="Password">
+                        </div>
+                        <div class="provider-field">
+                            <label for="you_sender">Sender</label>
+                            <input class="provider-input" type="text" id="you_sender" name="you_sender" placeholder="MessageFlow">
+                        </div>
+                        <div class="provider-field" style="grid-column: 1 / -1;">
+                            <label for="you_api_key">API Key</label>
+                            <input class="provider-input" type="text" id="you_api_key" name="you_api_key" placeholder="API Key (اختياري)">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>خيارات الإرسال</label>
+                    <div class="checkbox-group">
+                        <label class="check-item">
+                            <input type="checkbox" name="send_sms" checked> SMS
+                        </label>
+                        <label class="check-item">
+                            <input type="checkbox" name="send_whatsapp" checked> واتس آب
+                        </label>
+                        <label class="check-item">
+                            <input type="checkbox" name="parallel"> إرسال متوازي
+                        </label>
+                        <label class="check-item">
+                            <input type="checkbox" name="dry_run"> تجربة فقط
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <button type="button" class="primary-btn" id="saveProviderSettingsBtn" style="background: linear-gradient(135deg, #16a34a, #22c55e);">حفظ بيانات المزود</button>
+                </div>
+
+                <button class="primary-btn" type="submit">بدء الإرسال</button>
+            </form>
+
+            <div id="result" class="result"></div>
+            <div id="reportBox" class="report-box">
+                <div class="report-header">
+                    <h3>تقرير الإرسال</h3>
+                    <div class="report-actions">
+                        <button type="button" class="excel-btn" id="exportExcelBtn">تصدير Excel</button>
+                        <button type="button" class="print-btn" id="printReportBtn">طباعة PDF</button>
+                    </div>
+                </div>
+                <div class="report-table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>الاسم</th>
+                                <th>رقم الهاتف</th>
+                                <th>النوع</th>
+                                <th>الحالة</th>
+                                <th>المزود</th>
+                                <th>الرسالة</th>
+                                <th>الخطأ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reportTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const providerSelect = document.getElementById('sms_provider');
+        const providerPanels = document.querySelectorAll('.provider-panel');
+
+        function updateProviderFields() {
+            const selected = providerSelect.value;
+            providerPanels.forEach((panel) => {
+                const active = panel.dataset.provider === selected;
+                panel.classList.toggle('active', active);
+            });
+        }
+
+        providerSelect.addEventListener('change', updateProviderFields);
+        updateProviderFields();
+        loadSavedProviderSettings();
+
+        async function loadSavedProviderSettings() {
+            try {
+                const response = await fetch('/api/provider-settings');
+                const data = await response.json();
+                if (!data || !data.username) return;
+
+                const savedProvider = data.provider || 'twilio';
+                if (savedProvider && providerSelect) {
+                    providerSelect.value = savedProvider;
+                    updateProviderFields();
+                }
+
+                const fieldMap = {
+                    yemen_mobile_url: 'yemen_mobile_url',
+                    yemen_mobile_username: 'yemen_mobile_username',
+                    yemen_mobile_password: 'yemen_mobile_password',
+                    yemen_mobile_sender: 'yemen_mobile_sender',
+                    yemen_mobile_api_key: 'yemen_mobile_api_key',
+                    sapa_phone_url: 'sapa_phone_url',
+                    sapa_phone_username: 'sapa_phone_username',
+                    sapa_phone_password: 'sapa_phone_password',
+                    sapa_phone_sender: 'sapa_phone_sender',
+                    sapa_phone_api_key: 'sapa_phone_api_key',
+                    you_url: 'you_url',
+                    you_username: 'you_username',
+                    you_password: 'you_password',
+                    you_sender: 'you_sender',
+                    you_api_key: 'you_api_key'
+                };
+
+                for (const [key, value] of Object.entries(fieldMap)) {
+                    const input = document.getElementById(value);
+                    if (input && data[key] !== undefined) {
+                        input.value = data[key] || '';
+                    }
+                }
+            } catch (err) {
+                console.log('No saved provider settings found', err);
+            }
+        }
+
+        document.getElementById('saveProviderSettingsBtn').addEventListener('click', async () => {
+            const formData = new FormData(document.getElementById('uploadForm'));
+            try {
+                const response = await fetch('/save_provider_settings', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showResult('success', 'تم حفظ بيانات المزود بنجاح.');
+                } else {
+                    showResult('error', result.error || 'فشل حفظ بيانات المزود.');
+                }
+            } catch (err) {
+                showResult('error', 'تعذر حفظ بيانات المزود: ' + err.message);
+            }
+        });
+
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const fileInput = document.getElementById('excel_file');
+            if (!fileInput.files || !fileInput.files[0]) {
+                showResult('error', 'يرجى اختيار ملف Excel أولاً.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('excel_file', fileInput.files[0]);
+            formData.append('sms_provider', document.querySelector('select[name="sms_provider"]').value);
+            formData.append('send_sms', document.querySelector('input[name="send_sms"]').checked);
+            formData.append('send_whatsapp', document.querySelector('input[name="send_whatsapp"]').checked);
+            formData.append('parallel', document.querySelector('input[name="parallel"]').checked);
+            formData.append('dry_run', document.querySelector('input[name="dry_run"]').checked);
+
+            showResult('info', 'جاري تجهيز الملف والمعالجة...');
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    showResult('error', 'خطأ: ' + data.error);
+                    return;
+                }
+
+                checkJobStatus(data.job_id);
+            } catch (err) {
+                showResult('error', 'فشل الاتصال بالخادم: ' + err.message);
+            }
+        });
+
+        async function checkJobStatus(jobId) {
+            try {
+                const response = await fetch(`/job/${jobId}`);
+                const job = await response.json();
+
+                if (job.status === 'running') {
+                    showResult('info', 'جاري تنفيذ العملية... يرجى الانتظار');
+                    setTimeout(() => checkJobStatus(jobId), 2500);
+                    return;
+                }
+
+                if (job.status === 'completed') {
+                    const stats = job.stats || {};
+                    showResult('success', `
+                        <strong>تمت العملية بنجاح</strong><br>
+                        إجمالي: ${stats.total || 0} &nbsp;|&nbsp;
+                        صالح: ${stats.valid || 0} &nbsp;|&nbsp;
+                        غير صالح: ${stats.invalid || 0}<br>
+                        SMS ناجح: ${stats.sms_sent || 0} &nbsp;|&nbsp;
+                        واتس آب ناجح: ${stats.whatsapp_sent || 0}
+                    `);
+                    renderReportTable(stats.report_rows || []);
+                    return;
+                }
+
+                showResult('error', 'فشل: ' + (job.error || 'حدث خطأ غير معروف'));
+            } catch (err) {
+                showResult('error', 'تعذر قراءة حالة المهمة: ' + err.message);
+            }
+        }
+
+        let currentReportRows = [];
+
+        function renderReportTable(rows) {
+            const tbody = document.getElementById('reportTableBody');
+            const reportBox = document.getElementById('reportBox');
+            tbody.innerHTML = '';
+            currentReportRows = Array.isArray(rows) ? rows : [];
+
+            if (!Array.isArray(rows) || rows.length === 0) {
+                reportBox.style.display = 'none';
+                return;
+            }
+
+            rows.forEach((row) => {
+                const tr = document.createElement('tr');
+                const statusClass = row.status === 'success'
+                    ? 'status-success'
+                    : row.status === 'failed'
+                        ? 'status-failed'
+                        : 'status-dry';
+
+                tr.innerHTML = `
+                    <td>${escapeHtml(row.name || 'غير محدد')}</td>
+                    <td>${escapeHtml(row.phone || '')}</td>
+                    <td>${escapeHtml(row.type || '')}</td>
+                    <td><span class="status-badge ${statusClass}">${statusLabel(row.status)}</span></td>
+                    <td>${escapeHtml(row.provider || '')}</td>
+                    <td>${escapeHtml(row.message || '')}</td>
+                    <td>${escapeHtml(row.error || '')}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            reportBox.style.display = 'block';
+        }
+
+        function exportReportToExcel() {
+            if (!Array.isArray(currentReportRows) || currentReportRows.length === 0) {
+                showResult('info', 'لا توجد بيانات لتصديرها في التقرير الحالي.');
+                return;
+            }
+
+            const headers = ['الاسم', 'رقم الهاتف', 'النوع', 'الحالة', 'المزود', 'الرسالة', 'الخطأ'];
+            const csvRows = [headers.join(',')];
+
+            currentReportRows.forEach((row) => {
+                const values = [
+                    row.name || 'غير محدد',
+                    row.phone || '',
+                    row.type || '',
+                    statusLabel(row.status),
+                    row.provider || '',
+                    row.message || '',
+                    row.error || ''
+                ].map((value) => `"${String(value).replace(/"/g, '""')}"`);
+                csvRows.push(values.join(','));
+            });
+
+            const csvContent = csvRows.join('\n');
+            const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'report_' + new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-').replace(/-/, '_') + '.csv';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            showResult('success', 'تم تصدير التقرير إلى Excel بنجاح.');
+        }
+
+        function statusLabel(status) {
+            if (status === 'success') return 'تم الإرسال';
+            if (status === 'failed') return 'فشل';
+            if (status === 'dry_run') return 'تجربة فقط';
+            return status || 'غير معروف';
+        }
+
+        function escapeHtml(value) {
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function showResult(type, message) {
+            const result = document.getElementById('result');
+            result.className = 'result ' + type;
+            result.innerHTML = message;
+        }
+
+        document.getElementById('printReportBtn').addEventListener('click', () => {
+            window.print();
+        });
+
+        document.getElementById('exportExcelBtn').addEventListener('click', exportReportToExcel);
+    </script>
+</body>
+</html>

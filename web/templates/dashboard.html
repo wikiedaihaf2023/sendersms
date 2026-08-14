@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - MessageFlow Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #edf4ff;
+            --page: #f8fafc;
+            --panel: rgba(255, 255, 255, 0.9);
+            --sidebar: #0f172a;
+            --sidebar-soft: #111827;
+            --primary: #1d4ed8;
+            --primary-deep: #172554;
+            --secondary: #7c3aed;
+            --accent: #22c55e;
+            --text: #0f172a;
+            --muted: #475569;
+            --warning: #f59e0b;
+            --danger: #dc2626;
+            --border: rgba(148, 163, 184, 0.2);
+            --shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Noto Kufi Arabic', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #eef4ff 0%, #f8fafc 100%);
+            color: var(--text);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 250px minmax(0, 1fr);
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background: linear-gradient(180deg, var(--sidebar) 0%, var(--sidebar-soft) 100%);
+            color: #e2e8f0;
+            padding: 26px 20px;
+        }
+
+        .brand-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+            padding: 14px 12px;
+            border: 1px solid rgba(148,163,184,0.18);
+            border-radius: 16px;
+            background: rgba(255,255,255,0.02);
+        }
+
+        .brand-mark {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            box-shadow: 0 12px 24px rgba(79, 70, 229, 0.25);
+        }
+
+        .brand-mark svg {
+            width: 22px;
+            height: 22px;
+            fill: white;
+        }
+
+        .brand-box strong {
+            font-size: 1.05rem;
+            display: block;
+        }
+
+        .brand-box small {
+            color: #cbd5e1;
+            display: block;
+            margin-top: 2px;
+        }
+
+        .nav {
+            display: grid;
+            gap: 10px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            color: #e2e8f0;
+            text-decoration: none;
+            font-weight: 600;
+            opacity: 0.82;
+        }
+
+        .nav-item.active {
+            background: rgba(59,130,246,0.15);
+            color: white;
+            border: 1px solid rgba(96,165,250,0.3);
+            opacity: 1;
+        }
+
+        .nav-item:hover {
+            background: rgba(255,255,255,0.04);
+        }
+
+        .nav-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.08);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+
+        .main {
+            padding: 28px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
+        .title h2 {
+            margin: 0;
+            font-size: clamp(1.7rem, 2vw, 2.6rem);
+            color: var(--primary-deep);
+        }
+
+        .title p {
+            margin: 8px 0 0;
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .pill {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 8px 12px;
+            color: var(--muted);
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            padding: 12px 18px;
+            font-weight: 700;
+            box-shadow: 0 14px 30px rgba(29,78,216,0.25);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(180px, 1fr));
+            gap: 18px;
+            margin-bottom: 22px;
+        }
+
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            padding: 18px 18px 16px;
+        }
+
+        .metric-label {
+            color: var(--muted);
+            font-size: 0.82rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .metric-value {
+            font-size: clamp(1.8rem, 2vw, 2.3rem);
+            font-weight: 800;
+            color: var(--primary-deep);
+            line-height: 1.2;
+        }
+
+        .trend {
+            display: inline-flex;
+            align-items: center;
+            margin-top: 12px;
+            padding: 5px 10px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .trend.up { background: #ecfdf5; color: #166534; }
+        .trend.mid { background: #eff6ff; color: #1d4ed8; }
+        .trend.warn { background: #fff7ed; color: #b45309; }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 20px;
+        }
+
+        .chart-card {
+            padding: 18px 18px 12px;
+        }
+
+        .card-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .card-head h3 {
+            margin: 0;
+            font-size: 1.12rem;
+            color: var(--primary-deep);
+        }
+
+        .chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+            height: 170px;
+            padding-top: 16px;
+        }
+
+        .bar {
+            flex: 1;
+            border-radius: 10px 10px 0 0;
+            background: linear-gradient(180deg, #93c5fd, #2563eb);
+            min-height: 20px;
+            position: relative;
+        }
+
+        .bar:nth-child(2) { background: linear-gradient(180deg, #c4b5fd, #7c3aed); }
+        .bar:nth-child(3) { background: linear-gradient(180deg, #86efac, #16a34a); }
+        .bar:nth-child(4) { background: linear-gradient(180deg, #fcd34d, #f59e0b); }
+        .bar:nth-child(5) { background: linear-gradient(180deg, #a5b4fc, #4f46e5); }
+
+        .donut-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 165px;
+        }
+
+        .donut {
+            width: 118px;
+            height: 118px;
+            border-radius: 50%;
+            background: conic-gradient(var(--primary) 0 68%, #e2e8f0 68% 100%);
+            position: relative;
+        }
+
+        .donut::after {
+            content: "68%";
+            position: absolute;
+            inset: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border-radius: 50%;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--primary-deep);
+        }
+
+        .panel-card {
+            overflow: hidden;
+        }
+
+        .table-wrap {
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 14px 18px;
+            text-align: center;
+            border-bottom: 1px solid rgba(148,163,184,0.16);
+        }
+
+        th {
+            background: linear-gradient(135deg, var(--primary), #3b82f6);
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        td {
+            background: rgba(255,255,255,0.68);
+            color: var(--text);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 7px 12px;
+            border-radius: 999px;
+            font-size: 0.76rem;
+            font-weight: 700;
+        }
+
+        .status.running { background: #fff7ed; color: #b45309; }
+        .status.done { background: #ecfdf5; color: #166534; }
+        .status.failed { background: #fef2f2; color: #991b1b; }
+
+        .mini-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .mini-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 14px;
+            background: rgba(248,250,252,0.8);
+            border: 1px solid rgba(148,163,184,0.18);
+            border-radius: 12px;
+        }
+
+        .mini-item strong {
+            display: block;
+            font-size: 0.95rem;
+            color: var(--primary-deep);
+        }
+
+        .mini-item small {
+            color: var(--muted);
+        }
+
+        .mini-tag {
+            min-width: 52px;
+            text-align: center;
+            padding: 7px 10px;
+            font-weight: 800;
+            border-radius: 999px;
+            background: #eff6ff;
+            color: #1d4ed8;
+        }
+
+        .empty {
+            background: rgba(255,255,255,0.8);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 36px 20px;
+            text-align: center;
+            color: var(--muted);
+            box-shadow: var(--shadow);
+        }
+
+        .empty a {
+            color: var(--primary);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        @media (max-width: 1000px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                padding-bottom: 18px;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .stats {
+                grid-template-columns: repeat(2, minmax(150px, 1fr));
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .main {
+                padding: 20px 16px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <meta http-equiv="refresh" content="5">
+</head>
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="brand-box">
+                <span class="brand-mark" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H17.5A2.5 2.5 0 0 1 20 6.5V10A2.5 2.5 0 0 1 17.5 12.5H14L12.7 15.8A1 1 0 0 1 11.7 16.5H10.3a1 1 0 0 1-.98-1.2L11 12.5H6.5A2.5 2.5 0 0 1 4 10V6.5Zm2.5-.5a.5.5 0 0 0-.5.5V10a.5.5 0 0 0 .5.5H17.5a.5.5 0 0 0 .5-.5V6.5a.5.5 0 0 0-.5-.5H6.5Z"/>
+                    </svg>
+                </span>
+                <div>
+                    <strong>MessageFlow Pro</strong>
+                    <small>لوحة التشغيل</small>
+                </div>
+            </div>
+
+            <nav class="nav">
+                <a class="nav-item active" href="#"><span class="nav-icon">🏠</span>الرئيسية</a>
+                <a class="nav-item" href="#"><span class="nav-icon">📨</span>الحملات</a>
+                <a class="nav-item" href="#"><span class="nav-icon">📈</span>التقارير</a>
+                <a class="nav-item" href="#"><span class="nav-icon">👥</span>العملاء</a>
+                <a class="nav-item" href="#"><span class="nav-icon">⚙️</span>الإعدادات</a>
+            </nav>
+        </aside>
+
+        <main class="main">
+            <div class="topbar">
+                <div class="title">
+                    <h2>لوحة التحكم</h2>
+                    <p>مؤشرات التشغيل اليومي ومتابعة الحملات</p>
+                </div>
+
+                <div class="actions">
+                    <span class="pill">آخر تحديث: الآن</span>
+                    <a class="btn" href="/">الصفحة الرئيسية</a>
+                </div>
+            </div>
+
+            <div class="stats">
+                <div class="card">
+                    <span class="metric-label">إجمالي الحملات</span>
+                    <span class="metric-value">{{ jobs|length if jobs else 0 }}</span>
+                    <span class="trend up">+12% هذا الأسبوع</span>
+                </div>
+                <div class="card">
+                    <span class="metric-label">قيد التنفيذ</span>
+                    <span class="metric-value">{{ 0 if not jobs else jobs.values()|selectattr('status', 'equalto', 'running')|list|length }}</span>
+                    <span class="trend mid">متابعة مباشرة</span>
+                </div>
+                <div class="card">
+                    <span class="metric-label">مكتملة</span>
+                    <span class="metric-value">{{ 0 if not jobs else jobs.values()|selectattr('status', 'equalto', 'completed')|list|length }}</span>
+                    <span class="trend up">معدل إنجاز مرتفع</span>
+                </div>
+                <div class="card">
+                    <span class="metric-label">فاشلة</span>
+                    <span class="metric-value">{{ 0 if not jobs else jobs.values()|selectattr('status', 'equalto', 'failed')|list|length }}</span>
+                    <span class="trend warn">تحتاج مراجعة</span>
+                </div>
+            </div>
+
+            <div class="content-grid">
+                <div class="card chart-card">
+                    <div class="card-head">
+                        <h3>مؤشرات الأداء</h3>
+                        <span class="pill">الشهر الحالي</span>
+                    </div>
+                    <div class="chart" aria-label="مؤشرات الأداء">
+                        <div class="bar" style="height: 42%"></div>
+                        <div class="bar" style="height: 58%"></div>
+                        <div class="bar" style="height: 74%"></div>
+                        <div class="bar" style="height: 86%"></div>
+                        <div class="bar" style="height: 96%"></div>
+                    </div>
+                </div>
+
+                <div class="card chart-card">
+                    <div class="card-head">
+                        <h3>نسبة الإنجاز</h3>
+                        <span class="pill">مستهدف</span>
+                    </div>
+                    <div class="donut-wrap">
+                        <div class="donut" aria-label="نسبة الإنجاز 68%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 22px;" class="content-grid">
+                {% if jobs %}
+                <div class="card panel-card">
+                    <div class="card-head" style="padding: 18px 18px 0; margin-bottom: 0;">
+                        <h3>آخر المهام</h3>
+                        <span class="pill">محدثة</span>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>معرف المهمة</th>
+                                    <th>اسم الملف</th>
+                                    <th>الحالة</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for job_id, job in jobs.items() %}
+                                <tr>
+                                    <td dir="ltr">{{ job_id[:8] }}</td>
+                                    <td>{{ job.file }}</td>
+                                    <td>
+                                        {% if job.status == 'running' %}
+                                        <span class="status running">جارية</span>
+                                        {% elif job.status == 'completed' %}
+                                        <span class="status done">مكتملة</span>
+                                        {% else %}
+                                        <span class="status failed">فاشلة</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% else %}
+                <div class="empty" style="margin-top: 0;">
+                    لا توجد مهام بعد. ابدأ من <a href="/">الصفحة الرئيسية</a>.
+                </div>
+                {% endif %}
+
+                <div class="card chart-card">
+                    <div class="card-head">
+                        <h3>النشاطات السريعة</h3>
+                        <span class="pill">اليوم</span>
+                    </div>
+                    <div class="mini-list">
+                        <div class="mini-item">
+                            <div>
+                                <strong>رسائل SMS</strong>
+                                <small>إرسال متكرر</small>
+                            </div>
+                            <span class="mini-tag">1.2K</span>
+                        </div>
+                        <div class="mini-item">
+                            <div>
+                                <strong>واتساب</strong>
+                                <small>حملات نشطة</small>
+                            </div>
+                            <span class="mini-tag">840</span>
+                        </div>
+                        <div class="mini-item">
+                            <div>
+                                <strong>تحقق الأرقام</strong>
+                                <small>دقة عالية</small>
+                            </div>
+                            <span class="mini-tag">97%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول - MessageFlow Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="login-shell">
+        <div class="login-card">
+            <aside class="login-side">
+                <div class="badge">
+                    <span class="brand-mark" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H17.5A2.5 2.5 0 0 1 20 6.5V10A2.5 2.5 0 0 1 17.5 12.5H14L12.7 15.8A1 1 0 0 1 11.7 16.5H10.3a1 1 0 0 1-.98-1.2L11 12.5H6.5A2.5 2.5 0 0 1 4 10V6.5Zm2.5-.5a.5.5 0 0 0-.5.5V10a.5.5 0 0 0 .5.5H17.5a.5.5 0 0 0 .5-.5V6.5a.5.5 0 0 0-.5-.5H6.5Z"/>
+                        </svg>
+                    </span>
+                    MessageFlow Pro
+                </div>
+                <h2>مرحباً بعودتك</h2>
+                <p>لوحة تحكم متكاملة لإدارة الحملات، متابعة الأداء، وتنظيم الإرسال عبر قنوات متعددة بطريقة احترافية.</p>
+                <div class="login-list">
+                    <div>📨 إدارة حملات SMS وواتساب</div>
+                    <div>📊 تقارير ومؤشرات أداء فورية</div>
+                    <div>🔐 وصول آمن ومراقبة كاملة</div>
+                </div>
+            </aside>
+
+            <section class="login-form-box">
+                <h3>تسجيل الدخول</h3>
+                <p>قم بتسجيل الدخول للوصول إلى لوحة التحكم</p>
+
+                {% if error %}
+                <div class="result-box error" style="display:block; margin-bottom:16px;">{{ error }}</div>
+                {% endif %}
+
+                <form class="login-form" method="post">
+                    <div class="field">
+                        <label for="username">اسم المستخدم</label>
+                        <input id="username" name="username" type="text" placeholder="admin" required>
+                    </div>
+
+                    <div class="field">
+                        <label for="password">كلمة المرور</label>
+                        <input id="password" name="password" type="password" placeholder="••••••••" required>
+                    </div>
+
+                    <div class="inline-row">
+                        <label class="checkbox-inline">
+                            <input type="checkbox" name="remember">
+                            تذكرني
+                        </label>
+                        <a class="linkish" href="#">نسيت كلمة المرور؟</a>
+                    </div>
+
+                    <button type="submit" class="btn">دخول إلى لوحة التحكم</button>
+                </form>
+            </section>
+        </div>
+    </div>
+</body>
+</html>

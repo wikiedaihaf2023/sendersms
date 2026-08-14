@@ -1,0 +1,20 @@
+# Core
+pandas>=2.2.3
+openpyxl>=3.1.5
+xlrd>=2.0.1
+phonenumbers>=8.13.40
+python-dotenv>=1.0.1
+
+# Messaging
+twilio>=9.3.0
+requests>=2.32.0
+
+# Database (بدون SQLAlchemy - نستخدم sqlite3 المدمج)
+# لا يحتاج مكتبات إضافية
+
+# Web (اختياري)
+flask>=3.0.3
+
+# Development
+pytest>=8.3.0
+black>=24.8.0
