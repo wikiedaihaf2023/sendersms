@@ -16,6 +16,7 @@ from app.services.validator_service import validator_service
 from app.services.sms_service import SMSService
 from app.services.sms_gateway_service import GenericHTTPGatewayService
 from app.services.whatsapp_service import whatsapp_service
+from app.services.billing_service import billing_service
 from app.database.repositories import message_repo, operation_repo
 
 
@@ -29,7 +30,8 @@ class AutomationEngine:
         send_whatsapp: bool = True,
         parallel: bool = False,
         max_workers: int = 5,
-        dry_run: bool = False
+        dry_run: bool = False,
+        username: str = 'default'
     ):
         """
         تهيئة المحرك
@@ -41,6 +43,7 @@ class AutomationEngine:
             parallel: استخدام المعالجة المتوازية
             max_workers: عدد العمال المتوازيين
             dry_run: وضع التجربة (بدون إرسال فعلي)
+            username: اسم المستخدم الحالي للتحقق من الرصيد والفوترة
         """
         self.excel_file = excel_file
         self.send_sms = send_sms
@@ -48,6 +51,7 @@ class AutomationEngine:
         self.parallel = parallel
         self.max_workers = max_workers
         self.dry_run = dry_run
+        self.username = (username or 'default').strip() or 'default'
 
         self.contacts: List[Contact] = []
         self.valid_contacts: List[Contact] = []
@@ -64,6 +68,7 @@ class AutomationEngine:
             'whatsapp_sent': 0,
             'whatsapp_failed': 0,
             'whatsapp_skipped_duplicate': 0,
+            'balance_error': '',
             'error_contacts': [],
             'report_rows': []
         }
@@ -111,7 +116,31 @@ class AutomationEngine:
             # 2. التحقق من البيانات
             self._validate_contacts()
 
-            # 3. إرسال الرسائل
+            # 3. التحقق من رصيد الباقة قبل الإرسال (فقط إذا كان إرسال SMS مفعلاً)
+            if self.send_sms and not self.dry_run:
+                sms_to_send = len(self.valid_contacts)
+                if sms_to_send > 0:
+                    balance = billing_service.check_balance(
+                        username=self.username,
+                        required_count=sms_to_send,
+                        provider=settings.sms.provider
+                    )
+                    if not balance.ok:
+                        error_msg = (
+                            f"لا يمكن بدء الإرسال - {balance.message}. "
+                            f"يرجى الاشتراك في باقة كافية قبل المتابعة."
+                        )
+                        logger.error(error_msg)
+                        self.stats['balance_error'] = balance.message
+                        self._generate_summary(elapsed_time=0)
+                        return self.stats
+
+                    logger.info(
+                        f"فحص الرصيد: {balance.remaining} رسالة متاحة، "
+                        f"المطلوب: {sms_to_send} - الحالة: جيد ✓"
+                    )
+
+            # 4. إرسال الرسائل
             if self.valid_contacts:
                 if self.parallel:
                     self._send_messages_parallel()
@@ -297,6 +326,45 @@ class AutomationEngine:
                 })
             return
 
+        # خصم رسالة واحدة من الباقة قبل الإرسال (ضمان عدم تجاوز الرصيد)
+        consumed = billing_service.consume_messages(
+            username=self.username,
+            count=1,
+            provider=settings.sms.provider,
+            reference=f'SMS-{contact.formatted_phone}'
+        )
+        if not consumed:
+            logger.warning(f"لا يوجد رصيد كافي لإرسال SMS إلى {contact.display_phone} - تم إيقاف الإرسال")
+            with self._stats_lock:
+                self.stats['sms_failed'] += 1
+                self.stats['balance_error'] = self.stats.get('balance_error') or 'نفذ رصيد الباقة أثناء الإرسال'
+                self.stats['error_contacts'].append({
+                    'phone': contact.formatted_phone,
+                    'type': 'sms',
+                    'error': 'نفذ رصيد الباقة أثناء الإرسال'
+                })
+                self.stats['report_rows'].append({
+                    'name': contact.name or 'غير محدد',
+                    'phone': contact.formatted_phone,
+                    'type': 'SMS',
+                    'status': 'failed',
+                    'provider': settings.sms.provider,
+                    'message': content,
+                    'error': 'نفذ رصيد الباقة - يرجى تجديد الاشتراك'
+                })
+            message_repo.log_message(
+                contact_phone=contact.formatted_phone,
+                formatted_phone=contact.formatted_phone,
+                contact_name=contact.name,
+                passport_number=contact.passport_number,
+                message_type='sms',
+                message_content=content,
+                status='failed',
+                error_message='نفذ رصيد الباقة',
+                retry_count=0
+            )
+            return
+
         # إنشاء كائن الرسالة
         message = Message(
             contact_phone=contact.formatted_phone,
@@ -334,6 +402,13 @@ class AutomationEngine:
                 provider=result.provider
             )
         else:
+            # إرجاع الرسالة للباقة بسبب الفشل
+            billing_service.refund_messages(
+                username=self.username,
+                count=1,
+                provider=settings.sms.provider,
+                reference=f'REFUND-{contact.formatted_phone}'
+            )
             with self._stats_lock:
                 self.stats['sms_failed'] += 1
                 self.stats['error_contacts'].append({

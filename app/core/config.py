@@ -57,7 +57,7 @@ class TwilioSettings:
 
 @dataclass
 class SMSGatewaySettings:
-    provider: str = 'twilio'
+    provider: str = 'yemen_mobile'
     yemen_mobile_url: str = ''
     yemen_mobile_username: str = ''
     yemen_mobile_password: str = ''
@@ -204,7 +204,7 @@ class Settings:
         self.secret_key = _get('SECRET_KEY', self.secret_key)
 
         # SMS provider selection
-        self.sms.provider = _get('SMS_PROVIDER', self.sms.provider).lower() or 'twilio'
+        self.sms.provider = _get('SMS_PROVIDER', self.sms.provider).lower() or 'yemen_mobile'
         self.sms.timeout_seconds = _get_int('SMS_TIMEOUT_SECONDS', self.sms.timeout_seconds)
 
         # Twilio

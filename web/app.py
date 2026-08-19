@@ -15,6 +15,7 @@ from app.core.automation import AutomationEngine
 from app.core.logger import logger
 from app.core.config import settings
 from app.database.repositories import provider_settings_repo
+from app.services.billing_service import billing_service
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', settings.secret_key)
@@ -93,7 +94,7 @@ def provider_settings_api():
 def save_provider_settings():
     """حفظ إعدادات المزود للمستخدم الحالي في قاعدة البيانات"""
     username = get_current_username()
-    provider = (request.form.get('sms_provider') or settings.sms.provider or 'twilio').strip().lower()
+    provider = (request.form.get('sms_provider') or settings.sms.provider or 'yemen_mobile').strip().lower()
 
     payload = {
         'yemen_mobile_url': request.form.get('yemen_mobile_url', ''),
@@ -115,6 +116,82 @@ def save_provider_settings():
 
     provider_settings_repo.save_provider_settings(username=username, provider=provider, **payload)
     return jsonify({'success': True, 'provider': provider, 'username': username})
+
+
+@app.route('/api/packages')
+def api_list_packages():
+    """إرجاع قائمة الباقات المتاحة للمزود الحالي أو المحدد"""
+    provider = (request.args.get('provider') or settings.sms.provider or 'yemen_mobile').strip().lower()
+    summary = billing_service.get_subscription_summary(
+        username=get_current_username(), provider=provider
+    )
+    return jsonify(summary)
+
+
+@app.route('/api/subscribe', methods=['POST'])
+def api_subscribe():
+    """اشتراك المستخدم في باقة"""
+    username = get_current_username()
+    package_id_raw = request.form.get('package_id') or request.json.get('package_id') if request.is_json else request.form.get('package_id')
+    try:
+        package_id = int(package_id_raw)
+    except (TypeError, ValueError):
+        return jsonify({'success': False, 'error': 'معرف الباقة غير صالح'}), 400
+
+    provider = (
+        (request.form.get('provider') or settings.sms.provider or 'yemen_mobile')
+        if not request.is_json
+        else ((request.json or {}).get('provider') or settings.sms.provider or 'yemen_mobile')
+    ).strip().lower()
+
+    sub = billing_service.subscribe_to_package(username=username, package_id=package_id, provider=provider)
+    if not sub:
+        return jsonify({'success': False, 'error': 'فشل الاشتراك في الباقة - الباقة غير موجودة أو غير مفعلة'}), 400
+
+    summary = billing_service.get_subscription_summary(username=username, provider=provider)
+    return jsonify({
+        'success': True,
+        'message': f'تم الاشتراك بنجاح في الباقة. الرصيد: {sub.sms_remaining} رسالة.',
+        'subscription': summary,
+        'package_id': package_id,
+        'provider': provider,
+    })
+
+
+@app.route('/api/balance')
+def api_check_balance():
+    """فحص الرصيد المطلوب قبل الإرسال"""
+    username = get_current_username()
+    provider = (request.args.get('provider') or settings.sms.provider or 'yemen_mobile').strip().lower()
+    try:
+        required = int(request.args.get('required', '0'))
+    except ValueError:
+        required = 0
+
+    result = billing_service.check_balance(username=username, required_count=required, provider=provider)
+    return jsonify({
+        'ok': result.ok,
+        'provider': result.provider,
+        'remaining_sms': result.remaining,
+        'required_sms': result.required,
+        'shortfall_sms': result.shortfall,
+        'subscription_id': result.subscription_id,
+        'message': result.message,
+    })
+
+
+@app.route('/api/usage-history')
+def api_usage_history():
+    """سجل الاستهلاك للمستخدم الحالي"""
+    username = get_current_username()
+    provider = (request.args.get('provider') or settings.sms.provider or 'yemen_mobile').strip().lower()
+    try:
+        limit = int(request.args.get('limit', '30'))
+    except ValueError:
+        limit = 30
+
+    logs = billing_service.get_usage_history(username=username, provider=provider, limit=limit)
+    return jsonify({'logs': logs, 'provider': provider, 'username': username})
 
 
 @app.route('/upload', methods=['POST'])
@@ -174,6 +251,7 @@ def upload_file():
     send_whatsapp = request.form.get('send_whatsapp', 'true').lower() == 'true'
     parallel = request.form.get('parallel', 'false').lower() == 'true'
     dry_run = request.form.get('dry_run', 'false').lower() == 'true'
+    username = get_current_username()
 
     # إنشاء مهمة
     job_id = os.urandom(8).hex()
@@ -185,7 +263,8 @@ def upload_file():
                 send_sms=send_sms,
                 send_whatsapp=send_whatsapp,
                 parallel=parallel,
-                dry_run=dry_run
+                dry_run=dry_run,
+                username=username
             )
             stats = engine.run()
             with job_lock:

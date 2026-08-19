@@ -471,6 +471,208 @@
             box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
         }
 
+        .packages-section {
+            margin-top: 20px;
+            border: 1px solid #dfeafc;
+            border-radius: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fbff);
+            padding: 18px;
+        }
+
+        .packages-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+
+        .packages-header h3 {
+            margin: 0;
+            font-size: 1.08rem;
+            color: var(--text);
+        }
+
+        .balance-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ecfdf5, #dcfce7);
+            color: #166534;
+            border: 1px solid #86efac;
+        }
+
+        .balance-pill.warn {
+            background: linear-gradient(135deg, #fff7ed, #ffedd5);
+            color: #9a3412;
+            border: 1px solid #fdba74;
+        }
+
+        .balance-pill.empty {
+            background: linear-gradient(135deg, #fef2f2, #fee2e2);
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        .package-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+        }
+
+        .package-card {
+            border: 1.5px solid #dbeafe;
+            border-radius: 14px;
+            padding: 14px 12px;
+            background: linear-gradient(180deg, #ffffff, #f0f7ff);
+            position: relative;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .package-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgba(29, 78, 216, 0.15);
+            border-color: var(--primary);
+        }
+
+        .package-card.recommended::before {
+            content: 'الأكثر مبيعاً';
+            position: absolute;
+            top: -10px;
+            right: 10px;
+            background: linear-gradient(135deg, #7c3aed, #1d4ed8);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: 0.68rem;
+            font-weight: 800;
+            box-shadow: 0 6px 16px rgba(124, 58, 237, 0.3);
+        }
+
+        .package-name {
+            font-weight: 800;
+            font-size: 0.88rem;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .package-count {
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: var(--primary);
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .package-count-sub {
+            font-size: 0.72rem;
+            color: var(--muted);
+            margin-bottom: 10px;
+        }
+
+        .package-price {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 10px;
+        }
+
+        .package-price small {
+            font-weight: 600;
+            font-size: 0.78rem;
+            color: var(--muted);
+        }
+
+        .package-desc {
+            font-size: 0.72rem;
+            color: var(--muted);
+            min-height: 32px;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .subscribe-btn {
+            width: 100%;
+            border: none;
+            border-radius: 10px;
+            padding: 8px 10px;
+            background: linear-gradient(135deg, #16a34a, #22c55e);
+            color: white;
+            font-family: inherit;
+            font-size: 0.82rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            box-shadow: 0 6px 14px rgba(22, 163, 74, 0.25);
+        }
+
+        .subscribe-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .subscribe-btn:disabled {
+            background: #cbd5e1;
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .balance-progress-wrap {
+            margin: 6px 0 12px;
+        }
+
+        .balance-progress-bar {
+            position: relative;
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 999px;
+            overflow: hidden;
+            margin-top: 6px;
+        }
+
+        .balance-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #22c55e, #16a34a);
+            border-radius: 999px;
+            transition: width 0.4s ease;
+        }
+
+        .balance-progress-fill.warn {
+            background: linear-gradient(90deg, #f59e0b, #d97706);
+        }
+
+        .balance-progress-fill.critical {
+            background: linear-gradient(90deg, #ef4444, #dc2626);
+        }
+
+        .balance-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--muted);
+        }
+
+        .subscription-note {
+            font-size: 0.76rem;
+            padding: 8px 10px;
+            border-radius: 10px;
+            background: #fef3c7;
+            color: #92400e;
+            margin-top: 10px;
+            border: 1px solid #fde68a;
+            line-height: 1.6;
+        }
+
         .report-header {
             display: flex;
             align-items: center;
@@ -784,6 +986,32 @@
                 <button class="primary-btn" type="submit">بدء الإرسال</button>
             </form>
 
+            <div class="packages-section" id="packagesSection">
+                <div class="packages-header">
+                    <h3>باقات يمن موبايل المدفوعة</h3>
+                    <span class="balance-pill" id="balancePill">جاري التحميل...</span>
+                </div>
+
+                <div class="balance-progress-wrap" id="balanceProgressWrap" style="display:none;">
+                    <div class="balance-progress-bar">
+                        <div class="balance-progress-fill" id="balanceProgressFill" style="width:0%"></div>
+                    </div>
+                    <div class="balance-labels">
+                        <span id="balanceUsedLabel">0 مستخدم</span>
+                        <span id="balanceRemainingLabel">0 متبقي</span>
+                        <span id="balanceTotalLabel">0 إجمالي</span>
+                    </div>
+                    <div class="subscription-note" id="subscriptionExpiryNote" style="display:none;"></div>
+                </div>
+
+                <div class="package-grid" id="packageGrid">
+                    <!-- سيتم ملؤها عبر JavaScript -->
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 16px; color: var(--muted); font-size: 0.85rem;">
+                        جاري تحميل الباقات...
+                    </div>
+                </div>
+            </div>
+
             <div id="result" class="result"></div>
             <div id="reportBox" class="report-box">
                 <div class="report-header">
@@ -816,6 +1044,8 @@
     <script>
         const providerSelect = document.getElementById('sms_provider');
         const providerPanels = document.querySelectorAll('.provider-panel');
+        const PACKAGE_PROVIDERS = new Set(['yemen_mobile', 'sapa_phone', 'you']);
+        let currentSubscriptionData = null;
 
         function updateProviderFields() {
             const selected = providerSelect.value;
@@ -823,11 +1053,169 @@
                 const active = panel.dataset.provider === selected;
                 panel.classList.toggle('active', active);
             });
+            togglePackagesSection(selected);
+        }
+
+        function togglePackagesSection(provider) {
+            const section = document.getElementById('packagesSection');
+            if (!section) return;
+            if (PACKAGE_PROVIDERS.has(provider)) {
+                section.style.display = 'block';
+                loadPackagesAndBalance(provider);
+            } else {
+                section.style.display = 'none';
+            }
+        }
+
+        async function loadPackagesAndBalance(provider) {
+            provider = provider || providerSelect.value || 'yemen_mobile';
+            const balancePill = document.getElementById('balancePill');
+            const packageGrid = document.getElementById('packageGrid');
+            if (balancePill) balancePill.textContent = 'جاري التحميل...';
+
+            try {
+                const response = await fetch(`/api/packages?provider=${encodeURIComponent(provider)}`);
+                const data = await response.json();
+                currentSubscriptionData = data;
+                renderPackages(data.packages || []);
+                renderBalance(data);
+            } catch (err) {
+                console.error('Failed to load packages:', err);
+                if (balancePill) balancePill.textContent = 'خطأ في تحميل الرصيد';
+                if (packageGrid) {
+                    packageGrid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:16px;color:#991b1b;font-size:0.85rem;">تعذر تحميل الباقات - ${escapeHtml(err.message)}</div>`;
+                }
+            }
+        }
+
+        function renderBalance(data) {
+            const pill = document.getElementById('balancePill');
+            const wrap = document.getElementById('balanceProgressWrap');
+            const fill = document.getElementById('balanceProgressFill');
+            const usedLbl = document.getElementById('balanceUsedLabel');
+            const remLbl = document.getElementById('balanceRemainingLabel');
+            const totalLbl = document.getElementById('balanceTotalLabel');
+            const expiryNote = document.getElementById('subscriptionExpiryNote');
+
+            if (!data || !data.has_active_subscription) {
+                if (pill) {
+                    pill.textContent = 'لا يوجد اشتراك';
+                    pill.className = 'balance-pill empty';
+                }
+                if (wrap) wrap.style.display = 'none';
+                if (expiryNote) expiryNote.style.display = 'none';
+                return;
+            }
+
+            const remaining = data.remaining_sms || 0;
+            const total = data.allocated_sms || 0;
+            const used = total - remaining;
+            const pct = data.usage_percentage || (total > 0 ? (used / total) * 100 : 0);
+
+            if (pill) {
+                pill.className = 'balance-pill';
+                if (remaining <= 0) pill.classList.add('empty');
+                else if (pct >= 80) pill.classList.add('warn');
+                pill.textContent = `الرصيد: ${remaining.toLocaleString()} / ${total.toLocaleString()} رسالة`;
+            }
+
+            if (wrap) {
+                wrap.style.display = 'block';
+                if (fill) {
+                    fill.style.width = `${Math.max(0, Math.min(100, pct))}%`;
+                    fill.classList.remove('warn', 'critical');
+                    if (pct >= 90) fill.classList.add('critical');
+                    else if (pct >= 75) fill.classList.add('warn');
+                }
+                if (usedLbl) usedLbl.textContent = `${used.toLocaleString()} مستخدم`;
+                if (remLbl) remLbl.textContent = `${remaining.toLocaleString()} متبقي`;
+                if (totalLbl) totalLbl.textContent = `${total.toLocaleString()} إجمالي`;
+            }
+
+            if (expiryNote) {
+                if (data.expiry_date) {
+                    const expiry = new Date(data.expiry_date);
+                    const now = new Date();
+                    const diffDays = Math.ceil((expiry - now) / (1000 * 60 * 60 * 24));
+                    expiryNote.style.display = 'block';
+                    let text = `تاريخ انتهاء الاشتراك: ${expiry.toLocaleDateString('ar-EG')}`;
+                    if (diffDays <= 0) text += ' - انتهى الصلاحية';
+                    else if (diffDays <= 3) text += ` - ⚠️ متبقي ${diffDays} أيام فقط`;
+                    else text += ` - متبقي ${diffDays} يوم`;
+                    expiryNote.textContent = text;
+                } else {
+                    expiryNote.style.display = 'none';
+                }
+            }
+        }
+
+        function renderPackages(packages) {
+            const grid = document.getElementById('packageGrid');
+            if (!grid) return;
+            if (!packages || packages.length === 0) {
+                grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:16px;color:var(--muted);font-size:0.85rem;">لا توجد باقات متاحة حالياً.</div>`;
+                return;
+            }
+
+            grid.innerHTML = '';
+            packages.forEach((pkg, idx) => {
+                const card = document.createElement('div');
+                card.className = 'package-card';
+                if (idx === 1 || pkg.sms_count === 500) card.classList.add('recommended');
+
+                const pricePerSms = pkg.price_per_sms || (pkg.sms_count > 0 ? pkg.price / pkg.sms_count : 0);
+
+                card.innerHTML = `
+                    <div class="package-name">${escapeHtml(pkg.name || 'باقة')}</div>
+                    <div class="package-count">${(pkg.sms_count || 0).toLocaleString()}</div>
+                    <div class="package-count-sub">رسالة SMS</div>
+                    <div class="package-price">${(pkg.price || 0).toLocaleString()} <small>${escapeHtml(pkg.currency || 'YER')}</small></div>
+                    <div class="package-desc">${escapeHtml(pkg.description || '')}<br>الرسالة الواحدة: ~${pricePerSms.toFixed(2)} ${escapeHtml(pkg.currency || 'YER')}</div>
+                    <button type="button" class="subscribe-btn" data-package-id="${pkg.id}" data-provider="${escapeHtml(pkg.provider || 'yemen_mobile')}">
+                        اشترك الآن
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+
+            grid.querySelectorAll('.subscribe-btn').forEach((btn) => {
+                btn.addEventListener('click', (e) => {
+                    const packageId = parseInt(e.currentTarget.dataset.packageId, 10);
+                    const provider = e.currentTarget.dataset.provider || 'yemen_mobile';
+                    if (packageId) handleSubscribe(packageId, provider, e.currentTarget);
+                });
+            });
+        }
+
+        async function handleSubscribe(packageId, provider, btn) {
+            const originalText = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'جاري الاشتراك...';
+            try {
+                const formData = new FormData();
+                formData.append('package_id', packageId);
+                formData.append('provider', provider);
+                const response = await fetch('/api/subscribe', { method: 'POST', body: formData });
+                const result = await response.json();
+                if (result.success) {
+                    showResult('success', result.message || 'تم الاشتراك بنجاح');
+                    await loadPackagesAndBalance(provider);
+                } else {
+                    showResult('error', result.error || 'فشل الاشتراك');
+                }
+            } catch (err) {
+                showResult('error', 'تعذر إكمال الاشتراك: ' + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }
         }
 
         providerSelect.addEventListener('change', updateProviderFields);
-        updateProviderFields();
-        loadSavedProviderSettings();
+        document.addEventListener('DOMContentLoaded', async () => {
+            updateProviderFields();
+            await loadSavedProviderSettings();
+        });
 
         async function loadSavedProviderSettings() {
             try {
@@ -897,13 +1285,29 @@
                 return;
             }
 
+            const sendSms = document.querySelector('input[name="send_sms"]').checked;
+            const dryRun = document.querySelector('input[name="dry_run"]').checked;
+            const provider = document.querySelector('select[name="sms_provider"]').value;
+
+            if (sendSms && !dryRun && PACKAGE_PROVIDERS.has(provider)) {
+                try {
+                    const sub = currentSubscriptionData;
+                    if (!sub || !sub.has_active_subscription || sub.remaining_sms <= 0) {
+                        showResult('error', `⚠️ لا يوجد رصيد كافي لإرسال الرسائل عبر ${escapeHtml(provider)}. يرجى الاشتراك في باقة من القسم أدناه قبل البدء.`);
+                        const section = document.getElementById('packagesSection');
+                        if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        return;
+                    }
+                } catch (_) {}
+            }
+
             const formData = new FormData();
             formData.append('excel_file', fileInput.files[0]);
-            formData.append('sms_provider', document.querySelector('select[name="sms_provider"]').value);
-            formData.append('send_sms', document.querySelector('input[name="send_sms"]').checked);
+            formData.append('sms_provider', provider);
+            formData.append('send_sms', sendSms);
             formData.append('send_whatsapp', document.querySelector('input[name="send_whatsapp"]').checked);
             formData.append('parallel', document.querySelector('input[name="parallel"]').checked);
-            formData.append('dry_run', document.querySelector('input[name="dry_run"]').checked);
+            formData.append('dry_run', dryRun);
 
             showResult('info', 'جاري تجهيز الملف والمعالجة...');
 
@@ -939,15 +1343,23 @@
 
                 if (job.status === 'completed') {
                     const stats = job.stats || {};
-                    showResult('success', `
+                    let successHtml = `
                         <strong>تمت العملية بنجاح</strong><br>
                         إجمالي: ${stats.total || 0} &nbsp;|&nbsp;
                         صالح: ${stats.valid || 0} &nbsp;|&nbsp;
                         غير صالح: ${stats.invalid || 0}<br>
                         SMS ناجح: ${stats.sms_sent || 0} &nbsp;|&nbsp;
                         واتس آب ناجح: ${stats.whatsapp_sent || 0}
-                    `);
+                    `;
+                    if (stats.balance_error) {
+                        successHtml += `<br><span style="color:#991b1b;font-weight:700;">⚠️ ${escapeHtml(stats.balance_error)}</span>`;
+                    }
+                    showResult('success', successHtml);
                     renderReportTable(stats.report_rows || []);
+                    const provider = document.querySelector('select[name="sms_provider"]').value;
+                    if (PACKAGE_PROVIDERS.has(provider)) {
+                        await loadPackagesAndBalance(provider);
+                    }
                     return;
                 }
 

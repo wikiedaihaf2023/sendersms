@@ -123,6 +123,63 @@ class DatabaseManager:
             started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             finished_at TIMESTAMP
         );
+
+        -- جدول باقات الرسائل المدفوعة
+        CREATE TABLE IF NOT EXISTS sms_packages (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            provider TEXT NOT NULL DEFAULT 'yemen_mobile',
+            sms_count INTEGER NOT NULL,
+            price REAL NOT NULL DEFAULT 0,
+            currency TEXT DEFAULT 'YER',
+            validity_days INTEGER DEFAULT 30,
+            is_active INTEGER DEFAULT 1,
+            description TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+
+        -- جدول اشتراكات المستخدمين في الباقات
+        CREATE TABLE IF NOT EXISTS user_subscriptions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
+            package_id INTEGER NOT NULL,
+            provider TEXT NOT NULL DEFAULT 'yemen_mobile',
+            sms_allocated INTEGER NOT NULL,
+            sms_remaining INTEGER NOT NULL,
+            total_cost REAL DEFAULT 0,
+            subscription_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            expiry_date TIMESTAMP,
+            status TEXT DEFAULT 'active',  -- active, expired, cancelled
+            FOREIGN KEY (package_id) REFERENCES sms_packages(id)
+        );
+        CREATE INDEX IF NOT EXISTS idx_sub_username ON user_subscriptions(username);
+        CREATE INDEX IF NOT EXISTS idx_sub_provider ON user_subscriptions(provider);
+        CREATE INDEX IF NOT EXISTS idx_sub_status ON user_subscriptions(status);
+
+        -- جدول سجل استهلاك الرصيد والرسائل
+        CREATE TABLE IF NOT EXISTS sms_usage_log (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
+            provider TEXT NOT NULL,
+            subscription_id INTEGER,
+            messages_sent INTEGER DEFAULT 0,
+            sms_charged INTEGER DEFAULT 0,
+            operation_type TEXT DEFAULT 'send',  -- send, subscribe, topup, refund
+            amount REAL DEFAULT 0,
+            reference TEXT,
+            notes TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+        CREATE INDEX IF NOT EXISTS idx_usage_username ON sms_usage_log(username);
+        CREATE INDEX IF NOT EXISTS idx_usage_provider ON sms_usage_log(provider);
+
+        -- إدراج باقات يمن موبايل الافتراضية إذا لم تكن موجودة
+        INSERT OR IGNORE INTO sms_packages (id, name, provider, sms_count, price, currency, validity_days, description) VALUES
+            (1, 'باقة يمن موبايل - أساسية', 'yemen_mobile', 100, 500, 'YER', 30, 'باقة 100 رسالة مناسبة للاستخدام الخفيف'),
+            (2, 'باقة يمن موبايل - احترافية', 'yemen_mobile', 500, 2250, 'YER', 30, 'باقة 500 رسالة للشركات الصغيرة'),
+            (3, 'باقة يمن موبايل - الأعمال', 'yemen_mobile', 2000, 8000, 'YER', 30, 'باقة 2000 رسالة للشركات الناشئة'),
+            (4, 'باقة يمن موبايل - مؤسسية', 'yemen_mobile', 10000, 35000, 'YER', 30, 'باقة 10000 رسالة للمؤسسات الكبيرة'),
+            (5, 'باقة يمن موبايل - شهرية غير محدودة', 'yemen_mobile', 50000, 150000, 'YER', 30, 'باقة شهرية ذات سعة عالية جداً');
         '''
 
         with self.get_connection() as conn:
