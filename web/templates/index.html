@@ -881,6 +881,17 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="account_number">رقم مالك الباقة والمرسل</label>
+                    <input class="provider-input" type="text" id="account_number" name="account_number" value="783376205" inputmode="numeric" required>
+                    <small style="color: var(--muted);">يُستخدم هذا الرقم لتحديد رصيد الباقة وهوية الإرسال.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="message_text">نص الرسالة لجميع الأرقام</label>
+                    <textarea class="provider-input" id="message_text" name="message_text" rows="4" placeholder="اكتب نص الرسالة التي ستصل إلى جميع الأرقام"></textarea>
+                </div>
+
+                <div class="form-group">
                     <label for="sms_provider">مزود SMS</label>
                     <select class="select-box" id="sms_provider" name="sms_provider" aria-label="مزود SMS">
                         <option value="yemen_mobile" selected>يمن موبايل</option>
@@ -1069,12 +1080,13 @@
 
         async function loadPackagesAndBalance(provider) {
             provider = provider || providerSelect.value || 'yemen_mobile';
+            const accountNumber = document.getElementById('account_number')?.value.trim();
             const balancePill = document.getElementById('balancePill');
             const packageGrid = document.getElementById('packageGrid');
             if (balancePill) balancePill.textContent = 'جاري التحميل...';
 
             try {
-                const response = await fetch(`/api/packages?provider=${encodeURIComponent(provider)}`);
+                const response = await fetch(`/api/packages?provider=${encodeURIComponent(provider)}&account_number=${encodeURIComponent(accountNumber || '')}`);
                 const data = await response.json();
                 currentSubscriptionData = data;
                 renderPackages(data.packages || []);
@@ -1195,6 +1207,7 @@
                 const formData = new FormData();
                 formData.append('package_id', packageId);
                 formData.append('provider', provider);
+                formData.append('account_number', document.getElementById('account_number')?.value.trim() || '');
                 const response = await fetch('/api/subscribe', { method: 'POST', body: formData });
                 const result = await response.json();
                 if (result.success) {
@@ -1212,6 +1225,9 @@
         }
 
         providerSelect.addEventListener('change', updateProviderFields);
+        document.getElementById('account_number').addEventListener('change', () => {
+            loadPackagesAndBalance(providerSelect.value);
+        });
         document.addEventListener('DOMContentLoaded', async () => {
             updateProviderFields();
             await loadSavedProviderSettings();
@@ -1304,6 +1320,9 @@
             const formData = new FormData();
             formData.append('excel_file', fileInput.files[0]);
             formData.append('sms_provider', provider);
+            formData.append('account_number', document.getElementById('account_number').value.trim());
+            formData.append('sender_number', document.getElementById('account_number').value.trim());
+            formData.append('message_text', document.getElementById('message_text').value.trim());
             formData.append('send_sms', sendSms);
             formData.append('send_whatsapp', document.querySelector('input[name="send_whatsapp"]').checked);
             formData.append('parallel', document.querySelector('input[name="parallel"]').checked);

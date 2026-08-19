@@ -122,8 +122,9 @@ def save_provider_settings():
 def api_list_packages():
     """إرجاع قائمة الباقات المتاحة للمزود الحالي أو المحدد"""
     provider = (request.args.get('provider') or settings.sms.provider or 'yemen_mobile').strip().lower()
+    account_number = request.args.get('account_number', '').strip() or get_current_username()
     summary = billing_service.get_subscription_summary(
-        username=get_current_username(), provider=provider
+        username=account_number, provider=provider
     )
     return jsonify(summary)
 
@@ -131,7 +132,12 @@ def api_list_packages():
 @app.route('/api/subscribe', methods=['POST'])
 def api_subscribe():
     """اشتراك المستخدم في باقة"""
-    username = get_current_username()
+    payload = request.get_json(silent=True) or {}
+    username = (
+        request.form.get('account_number', '').strip()
+        or payload.get('account_number', '').strip()
+        or get_current_username()
+    )
     package_id_raw = request.form.get('package_id') or request.json.get('package_id') if request.is_json else request.form.get('package_id')
     try:
         package_id = int(package_id_raw)
@@ -162,6 +168,7 @@ def api_subscribe():
 def api_check_balance():
     """فحص الرصيد المطلوب قبل الإرسال"""
     username = get_current_username()
+    username = request.args.get('account_number', '').strip() or username
     provider = (request.args.get('provider') or settings.sms.provider or 'yemen_mobile').strip().lower()
     try:
         required = int(request.args.get('required', '0'))
@@ -214,6 +221,9 @@ def upload_file():
     file.save(filepath)
 
     # قراءة الخيارات
+    account_number = request.form.get('account_number', '').strip() or get_current_username()
+    sender_number = request.form.get('sender_number', '').strip()
+    message_text = request.form.get('message_text', '').strip()
     sms_provider = (request.form.get('sms_provider') or settings.sms.provider or 'twilio').strip().lower()
     if sms_provider in {'yemen_mobile', 'yemen-mobile', 'yemen mobile'}:
         settings.sms.provider = 'yemen_mobile'
@@ -243,6 +253,15 @@ def upload_file():
     settings.sms.you_sender = request.form.get('you_sender', settings.sms.you_sender).strip()
     settings.sms.you_api_key = request.form.get('you_api_key', settings.sms.you_api_key).strip()
 
+    if sender_number:
+        sender_field = f'{settings.sms.provider}_sender'
+        if hasattr(settings.sms, sender_field):
+            setattr(settings.sms, sender_field, sender_number)
+
+    if message_text:
+        settings.message.default_message = message_text
+        settings.message.enable_personalization = False
+
     valid, error_msg = validate_provider_configuration(settings.sms.provider)
     if not valid:
         return jsonify({'error': error_msg}), 400
@@ -251,7 +270,7 @@ def upload_file():
     send_whatsapp = request.form.get('send_whatsapp', 'true').lower() == 'true'
     parallel = request.form.get('parallel', 'false').lower() == 'true'
     dry_run = request.form.get('dry_run', 'false').lower() == 'true'
-    username = get_current_username()
+    username = account_number
 
     # إنشاء مهمة
     job_id = os.urandom(8).hex()

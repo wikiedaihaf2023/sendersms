@@ -72,6 +72,8 @@ class AutomationEngine:
             'error_contacts': [],
             'report_rows': []
         }
+        self.stats['account_number'] = self.username
+        self.stats['message_text'] = settings.message.default_message
         self._stats_lock = threading.Lock()
 
         # التحقق من توفر الخدمات (باستثناء وضع التجربة الذي لا يُرسل فعلياً)
