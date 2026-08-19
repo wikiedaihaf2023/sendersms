@@ -8,7 +8,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from flask import Flask, render_template, request, jsonify, redirect, url_for, session
+from flask import Flask, render_template, request, jsonify, redirect, url_for, session, send_from_directory
 from werkzeug.utils import secure_filename
 
 from app.core.automation import AutomationEngine
@@ -68,6 +68,12 @@ def allowed_file(filename):
 def index():
     """الصفحة الرئيسية"""
     return render_template('index.html')
+
+
+@app.route('/sw.js')
+def service_worker():
+    """تقديم Service Worker من جذر الموقع لتمكين تثبيت PWA."""
+    return send_from_directory(app.static_folder, 'sw.js', mimetype='application/javascript')
 
 
 @app.route('/login', methods=['GET', 'POST'])

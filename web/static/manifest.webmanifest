@@ -1,0 +1,20 @@
+{
+  "name": "MessageFlow Pro",
+  "short_name": "MessageFlow",
+  "description": "إدارة حملات رسائل SMS وواتس آب من ملفات Excel",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f3f7ff",
+  "theme_color": "#1d4ed8",
+  "icons": [
+    {
+      "src": "/static/messageflow-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
