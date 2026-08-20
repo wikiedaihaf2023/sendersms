@@ -48,6 +48,8 @@ def validate_provider_configuration(provider: str):
 
     if not url:
         return False, f'رابط {provider} مطلوب قبل الإرسال.'
+    if provider == 'phone_gateway':
+        return True, ''
     if not (username_value and password_value or api_key_value):
         return False, f'Username/Password أو API Key الخاص بـ {provider} مطلوبين قبل الإرسال.'
     if not sender_value:
@@ -118,6 +120,12 @@ def save_provider_settings():
         'you_password': request.form.get('you_password', ''),
         'you_sender': request.form.get('you_sender', ''),
         'you_api_key': request.form.get('you_api_key', ''),
+        'phone_gateway_url': request.form.get('phone_gateway_url', ''),
+        'phone_gateway_username': request.form.get('phone_gateway_username', ''),
+        'phone_gateway_password': request.form.get('phone_gateway_password', ''),
+        'phone_gateway_sender': request.form.get('phone_gateway_sender', ''),
+        'phone_gateway_api_key': request.form.get('phone_gateway_api_key', ''),
+        'phone_gateway_method': request.form.get('phone_gateway_method', 'get'),
     }
 
     provider_settings_repo.save_provider_settings(username=username, provider=provider, **payload)
@@ -133,6 +141,82 @@ def api_list_packages():
         username=account_number, provider=provider
     )
     return jsonify(summary)
+
+
+@app.route('/api/test-phone-gateway', methods=['POST'])
+def api_test_phone_gateway():
+    """اختبار اتصال بوابة الهاتف عبر إرسال رسالة تجريبية"""
+    url = (request.form.get('url') or '').strip()
+    method = (request.form.get('method') or 'get').strip().lower()
+    phone = (request.form.get('phone') or '').strip()
+    username = (request.form.get('username') or '').strip()
+    password = (request.form.get('password') or '').strip()
+    sender = (request.form.get('sender') or '').strip() or 'MessageFlow'
+    api_key = (request.form.get('api_key') or '').strip()
+
+    if not url:
+        return jsonify({'ok': False, 'error': 'الرابط مطلوب'}), 400
+    if not phone:
+        return jsonify({'ok': False, 'error': 'رقم الهاتف المستلم مطلوب'}), 400
+
+    from urllib.parse import urlencode
+    import requests
+    from app.core.logger import logger
+
+    payload = {
+        'num': phone, 'msg': '✅ MessageFlow Test - اختبار اتصال بوابة الهاتف',
+        'sender': sender,
+        'to': phone, 'text': '✅ MessageFlow Test - اختبار اتصال بوابة الهاتف',
+        'message': '✅ MessageFlow Test - اختبار اتصال بوابة الهاتف',
+        'phone': phone, 'from': sender,
+    }
+    if username:
+        payload['username'] = username
+    if password:
+        payload['password'] = password
+    if api_key:
+        payload['api_key'] = api_key
+    payload = {k: v for k, v in payload.items() if v not in (None, '', False)}
+
+    try:
+        timeout = getattr(settings.sms, 'timeout_seconds', 20) or 20
+        if method == 'get':
+            sep = '&' if '?' in url else '?'
+            final_url = f"{url}{sep}{urlencode(payload)}"
+            resp = requests.get(final_url, timeout=timeout)
+        elif method == 'form':
+            resp = requests.post(url, data=payload, timeout=timeout)
+        else:
+            resp = requests.post(url, json=payload, timeout=timeout)
+
+        text = (resp.text or '').strip()
+        ok_markers = ('success', 'ok', 'sent', 'accepted', 'queued', 'pending', 'true', '1', 'تم', 'messageid', 'id')
+        is_ok = resp.ok
+        combined = text.lower()
+        if not is_ok:
+            # بعض التأكد من أن النص يحتوي على مؤشر نجاح حتى في حال رمز 4xx
+            if any(tok in combined for tok in ok_markers):
+                is_ok = True
+        if not is_ok:
+            clipped = (text or '')[:300]
+            return jsonify({
+                'ok': False,
+                'error': 'فشل الاختبار. رمز الحالة: ' + str(resp.status_code) + '. الرد: ' + clipped
+            })
+        clipped = (text or '')[:300]
+        return jsonify({
+            'ok': True,
+            'message': '✅ تم الإرسال بنجاح! رمز الحالة: ' + str(resp.status_code) + '. الرد: ' + clipped
+        })
+    except requests.exceptions.RequestException as exc:
+        logger.warning('فشل الاتصال ببوابة الهاتف', url=url, exc=str(exc))
+        return jsonify({
+            'ok': False,
+            'error': f'❌ تعذر الاتصال ببوابة الهاتف. تأكد من أن الهاتف على نفس الشبكة وأن خادم HTTP يعمل. التفاصيل: {exc}'
+        })
+    except Exception as exc:
+        logger.exception(exc, {'type': 'test_gateway', 'url': url})
+        return jsonify({'ok': False, 'error': f'خطأ أثناء الاختبار: {exc}'}), 500
 
 
 @app.route('/api/subscribe', methods=['POST'])
@@ -237,6 +321,8 @@ def upload_file():
         settings.sms.provider = 'sapa_phone'
     elif sms_provider in {'you', 'you_sms', 'you-sms', 'you sms'}:
         settings.sms.provider = 'you'
+    elif sms_provider in {'phone_gateway', 'phone-gateway', 'phone gateway', 'gsm_gateway', 'sapa_gateway', 'device'}:
+        settings.sms.provider = 'phone_gateway'
     elif sms_provider in {'twilio'}:
         settings.sms.provider = 'twilio'
 
@@ -258,6 +344,13 @@ def upload_file():
     settings.sms.you_password = request.form.get('you_password', settings.sms.you_password).strip()
     settings.sms.you_sender = request.form.get('you_sender', settings.sms.you_sender).strip()
     settings.sms.you_api_key = request.form.get('you_api_key', settings.sms.you_api_key).strip()
+
+    settings.sms.phone_gateway_url = request.form.get('phone_gateway_url', settings.sms.phone_gateway_url).strip()
+    settings.sms.phone_gateway_username = request.form.get('phone_gateway_username', settings.sms.phone_gateway_username).strip()
+    settings.sms.phone_gateway_password = request.form.get('phone_gateway_password', settings.sms.phone_gateway_password).strip()
+    settings.sms.phone_gateway_sender = request.form.get('phone_gateway_sender', settings.sms.phone_gateway_sender).strip()
+    settings.sms.phone_gateway_api_key = request.form.get('phone_gateway_api_key', settings.sms.phone_gateway_api_key).strip()
+    settings.sms.phone_gateway_method = (request.form.get('phone_gateway_method', settings.sms.phone_gateway_method) or 'get').strip().lower()
 
     if sender_number:
         sender_field = f'{settings.sms.provider}_sender'

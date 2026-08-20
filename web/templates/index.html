@@ -897,7 +897,8 @@
                 <div class="form-group">
                     <label for="sms_provider">مزود SMS</label>
                     <select class="select-box" id="sms_provider" name="sms_provider" aria-label="مزود SMS">
-                        <option value="yemen_mobile" selected>يمن موبايل</option>
+                        <option value="yemen_mobile" selected>يمن موبايل (بوابة API رسمية)</option>
+                        <option value="phone_gateway">📱 بوابة الهاتف (Sapa GSM - شريحة الهاتف)</option>
                         <option value="sapa_phone">سبا فون</option>
                         <option value="you">YOU</option>
                         <option value="twilio">Twilio</option>
@@ -973,6 +974,81 @@
                             <input class="provider-input" type="text" id="you_api_key" name="you_api_key" placeholder="API Key (اختياري)">
                         </div>
                     </div>
+
+                    <div class="provider-panel" data-provider="phone_gateway" style="grid-template-columns: 1fr;">
+                        <div class="subscription-note" style="display:block;margin-bottom:14px;">
+                            <strong>📱 طريقة عمل بوابة الهاتف (Sapa GSM / SMS Gateway Pro):</strong><br>
+                            <span style="display:block;margin-top:6px;">1. ثبّت تطبيق (Sapa GSM / SMS Gateway Pro / Sapa Phone Gateway) على هاتف الأندرويد الذي به شريحة يمن موبايل.</span>
+                            <span style="display:block;margin-top:4px;">2. فعّل خيار <strong>Local HTTP Server</strong> أو <strong>Web Server</strong> داخل التطبيق.</span>
+                            <span style="display:block;margin-top:4px;">3. ضع المنفذ (Port) عادةً 8080 أو 8090 وحرر إعدادات الحماية على الهاتف.</span>
+                            <span style="display:block;margin-top:4px;">4. انسخ <strong>عنوان IP للهاتف</strong> من نفس الشبكة مثلاً: <code>http://192.168.1.15</code></span>
+                        </div>
+                        <div class="provider-field">
+                            <label for="phone_gateway_preset">🎯 اختر الإعداد الجاهز (Preset)</label>
+                            <select class="select-box" id="phone_gateway_preset">
+                                <option value="">—— اختر تطبيق الهاتف — سيعبّئ الإعدادات تلقائياً ——</option>
+                                <option value="sapa_gsm">🥇 Sapa GSM (الأكثر شيوعاً في اليمن) — Port 8090</option>
+                                <option value="sapa_gsm_post">🥈 Sapa GSM (POST JSON — للرسائل الطويلة) — Port 8090</option>
+                                <option value="sms_gateway_pro">🥉 SMS Gateway Pro (Moon Tech) — Port 8080</option>
+                                <option value="sms_gateway_pro_json">SMS Gateway Pro (POST JSON) — Port 8080</option>
+                                <option value="remote_sms_gateway">Remote SMS Gateway (قديم) — Port 9090</option>
+                                <option value="gsm_modem">Generic GSM Modem / Gateway</option>
+                            </select>
+                            <small id="phone_gateway_preset_desc" style="color:var(--muted); margin-top:4px; display:block;">اختر التطبيق المستخدم على الهاتف وسنتولى الباقي.</small>
+                        </div>
+                        <div class="provider-field">
+                            <label for="phone_gateway_ip">📱 عنوان IP للهاتف (فقط بدون منفذ أو مسار)</label>
+                            <input class="provider-input" type="text" id="phone_gateway_ip" placeholder="مثال: 192.168.1.15   أو   10.0.0.5">
+                            <small style="color:var(--muted); margin-top:4px; display:block;">أدخل IP الهاتف فقط - سيتم بناء الرابط الكامل تلقائياً بناءً على الـ Preset.</small>
+                        </div>
+                        <div class="provider-field">
+                            <label for="phone_gateway_url">🌐 رابط بوابة الهاتف (كامل - للتعديل اليدوي)</label>
+                            <input class="provider-input" type="text" id="phone_gateway_url" name="phone_gateway_url" placeholder="مثال: http://192.168.1.15:8090/sendsms">
+                        </div>
+                        <div class="provider-field">
+                            <label for="phone_gateway_method">طريقة الإرسال (HTTP Method)</label>
+                            <select class="select-box" id="phone_gateway_method" name="phone_gateway_method">
+                                <option value="get" selected>GET (Sapa GSM / SMS Gateway Pro — افتراضي)</option>
+                                <option value="form">POST Form Data</option>
+                                <option value="json">POST JSON (للرسائل الطويلة)</option>
+                            </select>
+                        </div>
+                        <div class="provider-field" style="grid-column:1 / -1; display:grid; grid-template-columns: repeat(2, minmax(160px, 1fr)); gap:14px;">
+                            <div class="provider-field">
+                                <label for="phone_gateway_username">Username (إن وجد)</label>
+                                <input class="provider-input" type="text" id="phone_gateway_username" name="phone_gateway_username" placeholder="اختياري">
+                            </div>
+                            <div class="provider-field">
+                                <label for="phone_gateway_password">Password (إن وجد)</label>
+                                <input class="provider-input" type="password" id="phone_gateway_password" name="phone_gateway_password" placeholder="اختياري">
+                            </div>
+                            <div class="provider-field">
+                                <label for="phone_gateway_sender">Sender / اسم المرسل (اختياري)</label>
+                                <input class="provider-input" type="text" id="phone_gateway_sender" name="phone_gateway_sender" placeholder="اختياري">
+                            </div>
+                            <div class="provider-field">
+                                <label for="phone_gateway_api_key">API Key (إن وجد)</label>
+                                <input class="provider-input" type="text" id="phone_gateway_api_key" name="phone_gateway_api_key" placeholder="اختياري">
+                            </div>
+                        </div>
+                        <div class="provider-field" style="grid-column: 1 / -1; display:grid; grid-template-columns: 1.5fr 1fr 1fr; gap:12px; align-items:end;">
+                            <div class="provider-field">
+                                <label for="phone_gateway_test_phone">📞 رقم للاختبار (لتجربة الإرسال)</label>
+                                <input class="provider-input" type="text" id="phone_gateway_test_phone" inputmode="numeric" placeholder="مثال: 77XXXXXXX أو +96777XXXXXXX">
+                            </div>
+                            <div class="provider-field">
+                                <button type="button" id="phoneGatewayTestBtn" class="primary-btn" style="background: linear-gradient(135deg, #f59e0b, #d97706); padding:14px 12px;">
+                                    🧪 اختبار الاتصال
+                                </button>
+                            </div>
+                            <div class="provider-field">
+                                <button type="button" id="phoneGatewaySaveBtn" class="primary-btn" style="background: linear-gradient(135deg, #16a34a, #22c55e); padding:14px 12px;">
+                                    💾 حفظ الإعداد
+                                </button>
+                            </div>
+                        </div>
+                        <div id="phoneGatewayTestResult" class="result" style="display:none; margin-top:12px;"></div>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -1002,7 +1078,7 @@
 
             <div class="packages-section" id="packagesSection">
                 <div class="packages-header">
-                    <h3>باقات يمن موبايل المدفوعة</h3>
+                    <h3 id="packagesSectionTitle">باقات يمن موبايل المدفوعة</h3>
                     <span class="balance-pill" id="balancePill">جاري التحميل...</span>
                 </div>
 
@@ -1072,10 +1148,41 @@
 
         function togglePackagesSection(provider) {
             const section = document.getElementById('packagesSection');
+            const title = document.getElementById('packagesSectionTitle');
             if (!section) return;
+            const providerNames = {
+                yemen_mobile: 'باقات يمن موبايل المدفوعة',
+                sapa_phone: 'باقات سبا فون المدفوعة',
+                you: 'باقات YOU المدفوعة',
+            };
             if (PACKAGE_PROVIDERS.has(provider)) {
                 section.style.display = 'block';
+                if (title) title.textContent = providerNames[provider] || 'الباقات المدفوعة';
                 loadPackagesAndBalance(provider);
+            } else if (provider === 'phone_gateway') {
+                section.style.display = 'block';
+                if (title) title.textContent = 'بوابة الهاتف - رصيد الشريحة';
+                const balancePill = document.getElementById('balancePill');
+                const wrap = document.getElementById('balanceProgressWrap');
+                const grid = document.getElementById('packageGrid');
+                if (balancePill) {
+                    balancePill.className = 'balance-pill';
+                    balancePill.textContent = '✅ جاهز - يستخدم رصيد شريحة الهاتف';
+                }
+                if (wrap) wrap.style.display = 'none';
+                if (grid) {
+                    grid.innerHTML = `
+                        <div style="grid-column: 1 / -1; background: linear-gradient(180deg, #ecfdf5, #dcfce7); border:1px solid #86efac; border-radius:14px; padding:16px; line-height:1.9; color:#065f46; font-size:0.9rem; font-weight:600;">
+                            📱 هذا المزود يستخدم <strong>رصيد شريحة الهاتف</strong> مباشرة (Sapa GSM / SMS Gateway Pro).<br>
+                            لا تحتاج لاشتراك في باقات من النظام — كل رسالة تُخصم من رصيد شريحة يمن موبايل الموجودة على الهاتف.<br>
+                            <strong>نصائح مهمة:</strong>
+                            <span style="display:block; margin-top:6px;">• لا تستخدم الإرسال المتوازي كثيراً لتجنب حجب الشريحة.</span>
+                            <span style="display:block;">• ضع تأخير مناسب بين الرسائل (1-3 ثواني).</span>
+                            <span style="display:block;">• تأكد أن الهاتف متصل دائماً بنفس شبكة الواي فاي.</span>
+                        </div>
+                    `;
+                }
+                currentSubscriptionData = { has_active_subscription: true, remaining_sms: 9999999 };
             } else {
                 section.style.display = 'none';
             }
@@ -1263,7 +1370,13 @@
                     you_username: 'you_username',
                     you_password: 'you_password',
                     you_sender: 'you_sender',
-                    you_api_key: 'you_api_key'
+                    you_api_key: 'you_api_key',
+                    phone_gateway_url: 'phone_gateway_url',
+                    phone_gateway_username: 'phone_gateway_username',
+                    phone_gateway_password: 'phone_gateway_password',
+                    phone_gateway_sender: 'phone_gateway_sender',
+                    phone_gateway_api_key: 'phone_gateway_api_key',
+                    phone_gateway_method: 'phone_gateway_method'
                 };
 
                 for (const [key, value] of Object.entries(fieldMap)) {
@@ -1294,6 +1407,124 @@
                 showResult('error', 'تعذر حفظ بيانات المزود: ' + err.message);
             }
         });
+
+        const PHONE_GATEWAY_PRESETS = {
+            sapa_gsm: {
+                label: 'Sapa GSM (الأكثر شيوعاً في اليمن)',
+                method: 'get', port: '8090', path: '/sendsms',
+                description: 'منفذ 8090 + /sendsms. الحقول: num (الرقم) و msg (الرسالة). الأفضل لحملات اليمن.'
+            },
+            sapa_gsm_post: {
+                label: 'Sapa GSM (POST JSON)',
+                method: 'json', port: '8090', path: '/sendsms',
+                description: 'Sapa GSM عبر POST JSON. الأفضل للرسائل العربية الطويلة.'
+            },
+            sms_gateway_pro: {
+                label: 'SMS Gateway Pro (Moon Tech)',
+                method: 'get', port: '8080', path: '/api/v1/sms/send',
+                description: 'منفذ 8080 + /api/v1/sms/send. الحقول: to + text.'
+            },
+            sms_gateway_pro_json: {
+                label: 'SMS Gateway Pro (POST JSON)',
+                method: 'json', port: '8080', path: '/api/v1/sms/send',
+                description: 'POST JSON لحملات كبيرة مع تقارير واضحة.'
+            },
+            remote_sms_gateway: {
+                label: 'Remote SMS Gateway (قديم)',
+                method: 'get', port: '9090', path: '/send',
+                description: 'منفذ 9090 + /send. الحقول: phone + text.'
+            },
+            gsm_modem: {
+                label: 'Generic GSM Modem / Gateway',
+                method: 'get', port: '80', path: '/',
+                description: 'إعداد عام قابل للتعديل حسب جهاز المودم الخاص بك.'
+            }
+        };
+
+        const presetSelect = document.getElementById('phone_gateway_preset');
+        const presetDesc = document.getElementById('phone_gateway_preset_desc');
+        const ipInput = document.getElementById('phone_gateway_ip');
+        const urlInput = document.getElementById('phone_gateway_url');
+        const methodSelect = document.getElementById('phone_gateway_method');
+        const testPhoneInput = document.getElementById('phone_gateway_test_phone');
+        const testBtn = document.getElementById('phoneGatewayTestBtn');
+        const saveBtn = document.getElementById('phoneGatewaySaveBtn');
+        const testResult = document.getElementById('phoneGatewayTestResult');
+
+        function buildGatewayUrl(ip, presetKey) {
+            ip = (ip || '').trim().replace(/^https?:\/\//, '').replace(/\/+$/, '');
+            if (!ip) return '';
+            const preset = PHONE_GATEWAY_PRESETS[presetKey];
+            if (!preset) return `http://${ip}`;
+            return `http://${ip}:${preset.port}${preset.path}`;
+        }
+
+        if (presetSelect) {
+            presetSelect.addEventListener('change', () => {
+                const key = presetSelect.value;
+                const preset = PHONE_GATEWAY_PRESETS[key];
+                if (preset && presetDesc) presetDesc.textContent = `✅ ${preset.label} — ${preset.description}`;
+                if (preset && methodSelect) methodSelect.value = preset.method;
+                const ip = (ipInput && ipInput.value) ? ipInput.value : '';
+                if (urlInput && ip && key) urlInput.value = buildGatewayUrl(ip, key);
+            });
+        }
+        if (ipInput) {
+            ipInput.addEventListener('input', () => {
+                const key = (presetSelect && presetSelect.value) || '';
+                if (urlInput && key) urlInput.value = buildGatewayUrl(ipInput.value, key);
+            });
+        }
+        if (testBtn) {
+            testBtn.addEventListener('click', async () => {
+                const url = (urlInput && urlInput.value || '').trim();
+                const method = (methodSelect && methodSelect.value || 'get').trim();
+                const phone = (testPhoneInput && testPhoneInput.value || '').trim();
+                const username = document.getElementById('phone_gateway_username')?.value || '';
+                const password = document.getElementById('phone_gateway_password')?.value || '';
+                const sender = document.getElementById('phone_gateway_sender')?.value || '';
+                const apiKey = document.getElementById('phone_gateway_api_key')?.value || '';
+                if (!url) { showPhoneGatewayTest('error', 'يرجى اختيار Preset وإدخال IP الهاتف أولاً.'); return; }
+                if (!phone) { showPhoneGatewayTest('error', 'يرجى إدخال رقم هاتف لاستقبال رسالة الاختبار.'); return; }
+                showPhoneGatewayTest('info', 'جاري إرسال رسالة اختبار... انتظر ثوانٍ.');
+                if (testBtn) testBtn.disabled = true;
+                try {
+                    const fd = new FormData();
+                    fd.append('url', url); fd.append('method', method); fd.append('phone', phone);
+                    fd.append('username', username); fd.append('password', password);
+                    fd.append('sender', sender); fd.append('api_key', apiKey);
+                    const res = await fetch('/api/test-phone-gateway', { method: 'POST', body: fd });
+                    const data = await res.json();
+                    if (data.ok) showPhoneGatewayTest('success', data.message || '✅ نجح الاختبار! وصل الطلب لبوابة الهاتف. تحقق من وصول الرسالة للرقم.');
+                    else showPhoneGatewayTest('error', data.error || '❌ فشل الاختبار - تحقق من IP وPort و Path و أن خادم HTTP يعمل على الهاتف.');
+                } catch (err) {
+                    showPhoneGatewayTest('error', 'تعذر الاتصال بالخادم للاختبار: ' + err.message);
+                } finally {
+                    if (testBtn) testBtn.disabled = false;
+                }
+            });
+        }
+        if (saveBtn) {
+            saveBtn.addEventListener('click', async () => {
+                const url = (urlInput && urlInput.value || '').trim();
+                if (!url) { showPhoneGatewayTest('error', 'يرجى إدخال الرابط أو اختيار Preset مع IP.'); return; }
+                const formData = new FormData(document.getElementById('uploadForm'));
+                try {
+                    const res = await fetch('/save_provider_settings', { method: 'POST', body: formData });
+                    const r = await res.json();
+                    if (r.success) showPhoneGatewayTest('success', '💾 تم حفظ إعدادات بوابة الهاتف بنجاح.');
+                    else showPhoneGatewayTest('error', r.error || 'فشل الحفظ.');
+                } catch (err) {
+                    showPhoneGatewayTest('error', 'تعذر الحفظ: ' + err.message);
+                }
+            });
+        }
+        function showPhoneGatewayTest(type, message) {
+            if (!testResult) return;
+            testResult.className = 'result ' + type;
+            testResult.style.display = 'block';
+            testResult.textContent = message;
+        }
 
         document.getElementById('uploadForm').addEventListener('submit', async (e) => {
             e.preventDefault();

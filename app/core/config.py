@@ -73,6 +73,12 @@ class SMSGatewaySettings:
     you_password: str = ''
     you_sender: str = ''
     you_api_key: str = ''
+    phone_gateway_url: str = ''
+    phone_gateway_username: str = ''
+    phone_gateway_password: str = ''
+    phone_gateway_sender: str = ''
+    phone_gateway_api_key: str = ''
+    phone_gateway_method: str = 'get'
     timeout_seconds: int = 30
 
     def is_provider_configured(self, provider: str) -> bool:
@@ -96,10 +102,18 @@ class SMSGatewaySettings:
                 'password': self.you_password,
                 'api_key': self.you_api_key,
             },
+            'phone_gateway': {
+                'url': self.phone_gateway_url,
+                'username': self.phone_gateway_username,
+                'password': self.phone_gateway_password,
+                'api_key': self.phone_gateway_api_key,
+            },
         }
         values = settings_map.get(provider)
         if not values:
             return False
+        if provider == 'phone_gateway':
+            return bool(values['url'])
         return bool(values['url'] and ((values['username'] and values['password']) or values['api_key']))
 
     def is_yemen_mobile_configured(self) -> bool:
@@ -111,6 +125,9 @@ class SMSGatewaySettings:
     def is_you_configured(self) -> bool:
         return self.is_provider_configured('you')
 
+    def is_phone_gateway_configured(self) -> bool:
+        return self.is_provider_configured('phone_gateway')
+
     def get_provider_config(self, provider: str):
         provider = (provider or '').strip().lower()
         return {
@@ -120,6 +137,7 @@ class SMSGatewaySettings:
                 'password': self.yemen_mobile_password,
                 'sender': self.yemen_mobile_sender,
                 'api_key': self.yemen_mobile_api_key,
+                'method': 'json',
             },
             'sapa_phone': {
                 'url': self.sapa_phone_url,
@@ -127,6 +145,7 @@ class SMSGatewaySettings:
                 'password': self.sapa_phone_password,
                 'sender': self.sapa_phone_sender,
                 'api_key': self.sapa_phone_api_key,
+                'method': 'json',
             },
             'you': {
                 'url': self.you_url,
@@ -134,6 +153,15 @@ class SMSGatewaySettings:
                 'password': self.you_password,
                 'sender': self.you_sender,
                 'api_key': self.you_api_key,
+                'method': 'json',
+            },
+            'phone_gateway': {
+                'url': self.phone_gateway_url,
+                'username': self.phone_gateway_username,
+                'password': self.phone_gateway_password,
+                'sender': self.phone_gateway_sender,
+                'api_key': self.phone_gateway_api_key,
+                'method': self.phone_gateway_method or 'get',
             },
         }.get(provider, {})
 
@@ -231,6 +259,14 @@ class Settings:
         self.sms.you_password = _get('YOU_PASSWORD', self.sms.you_password)
         self.sms.you_sender = _get('YOU_SENDER', self.sms.you_sender)
         self.sms.you_api_key = _get('YOU_API_KEY', self.sms.you_api_key)
+
+        # Phone Gateway (Sapa GSM / Local HTTP Gateway on device
+        self.sms.phone_gateway_url = _get('PHONE_GATEWAY_URL', self.sms.phone_gateway_url)
+        self.sms.phone_gateway_username = _get('PHONE_GATEWAY_USERNAME', self.sms.phone_gateway_username)
+        self.sms.phone_gateway_password = _get('PHONE_GATEWAY_PASSWORD', self.sms.phone_gateway_password)
+        self.sms.phone_gateway_sender = _get('PHONE_GATEWAY_SENDER', self.sms.phone_gateway_sender)
+        self.sms.phone_gateway_api_key = _get('PHONE_GATEWAY_API_KEY', self.sms.phone_gateway_api_key)
+        self.sms.phone_gateway_method = _get('PHONE_GATEWAY_METHOD', self.sms.phone_gateway_method)
 
         # Meta
         self.meta.access_token = _get('META_ACCESS_TOKEN')
