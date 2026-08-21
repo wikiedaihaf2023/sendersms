@@ -361,15 +361,16 @@ def upload_file():
         settings.message.default_message = message_text
         settings.message.enable_personalization = False
 
-    valid, error_msg = validate_provider_configuration(settings.sms.provider)
-    if not valid:
-        return jsonify({'error': error_msg}), 400
-
     send_sms = request.form.get('send_sms', 'true').lower() == 'true'
     send_whatsapp = request.form.get('send_whatsapp', 'true').lower() == 'true'
     parallel = request.form.get('parallel', 'false').lower() == 'true'
     dry_run = request.form.get('dry_run', 'false').lower() == 'true'
     username = account_number
+
+    if send_sms and not dry_run:
+        valid, error_msg = validate_provider_configuration(settings.sms.provider)
+        if not valid:
+            return jsonify({'error': error_msg}), 400
 
     # إنشاء مهمة
     job_id = os.urandom(8).hex()
