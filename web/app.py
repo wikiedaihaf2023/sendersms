@@ -361,7 +361,7 @@ def upload_file():
         settings.message.default_message = message_text
         settings.message.enable_personalization = False
 
-    send_sms = request.form.get('send_sms', 'true').lower() == 'true'
+    send_sms = request.form.get('send_sms', 'false').lower() == 'true'
     send_whatsapp = request.form.get('send_whatsapp', 'true').lower() == 'true'
     parallel = request.form.get('parallel', 'false').lower() == 'true'
     dry_run = request.form.get('dry_run', 'false').lower() == 'true'
