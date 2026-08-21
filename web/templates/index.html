@@ -503,11 +503,40 @@
         }
 
         .packages-section {
+            display: none;
             margin-top: 20px;
             border: 1px solid #dfeafc;
             border-radius: 18px;
             background: linear-gradient(180deg, #ffffff, #f8fbff);
             padding: 18px;
+        }
+
+        .packages-section.visible {
+            display: block;
+        }
+
+        .utility-actions {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .secondary-btn {
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 12px 14px;
+            background: #fff;
+            color: #334155;
+            font: inherit;
+            font-weight: 800;
+            cursor: pointer;
+            transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+        }
+
+        .secondary-btn:hover {
+            border-color: var(--primary);
+            background: #f8fbff;
+            transform: translateY(-1px);
         }
 
         .packages-header {
@@ -830,6 +859,18 @@
             .analytics {
                 grid-template-columns: 1fr;
             }
+
+            .panel {
+                padding: 22px 16px;
+            }
+
+            .panel-header h2 {
+                font-size: 1.3rem;
+            }
+
+            .utility-actions {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -1120,8 +1161,13 @@
                     <button type="button" class="primary-btn" id="saveProviderSettingsBtn" style="background: linear-gradient(135deg, #16a34a, #22c55e);">حفظ بيانات المزود</button>
                 </div>
 
-                <button class="primary-btn" type="submit">بدء الإرسال</button>
+                <button class="primary-btn" id="startSendingBtn" type="submit">بدء الإرسال</button>
             </form>
+
+            <div class="utility-actions" style="margin-top:14px;">
+                <button type="button" class="secondary-btn" id="subscriptionsToggle" aria-expanded="false">💳 الاشتراكات</button>
+                <button type="button" class="secondary-btn" id="clearFormBtn">↺ تفريغ الحقول</button>
+            </div>
 
             <div class="packages-section" id="packagesSection">
                 <div class="packages-header">
@@ -1184,8 +1230,34 @@
         const generalSettingsToggle = document.getElementById('generalSettingsToggle');
         const generalSettingsPanel = document.getElementById('generalSettingsPanel');
         const generalSettingsChevron = document.getElementById('generalSettingsChevron');
+        const subscriptionsToggle = document.getElementById('subscriptionsToggle');
+        const packagesSection = document.getElementById('packagesSection');
+        const clearFormBtn = document.getElementById('clearFormBtn');
+        const startSendingBtn = document.getElementById('startSendingBtn');
         const PACKAGE_PROVIDERS = new Set(['yemen_mobile', 'sapa_phone', 'you']);
         let currentSubscriptionData = null;
+        let subscriptionsOpen = false;
+
+        if (subscriptionsToggle && packagesSection) {
+            subscriptionsToggle.addEventListener('click', () => {
+                subscriptionsOpen = !subscriptionsOpen;
+                subscriptionsToggle.setAttribute('aria-expanded', String(subscriptionsOpen));
+                subscriptionsToggle.textContent = subscriptionsOpen ? '✕ إخفاء الاشتراكات' : '💳 الاشتراكات';
+                packagesSection.classList.toggle('visible', subscriptionsOpen);
+                if (subscriptionsOpen) packagesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        }
+
+        if (clearFormBtn) {
+            clearFormBtn.addEventListener('click', () => {
+                ['excel_file', 'message_text', 'whatsapp_chat_phone', 'whatsapp_chat_message'].forEach((id) => {
+                    const input = document.getElementById(id);
+                    if (input) input.value = '';
+                });
+                const result = document.getElementById('result');
+                if (result) result.style.display = 'none';
+            });
+        }
 
         if (generalSettingsToggle && generalSettingsPanel) {
             generalSettingsToggle.addEventListener('click', () => {
@@ -1215,11 +1287,11 @@
                 you: 'باقات YOU المدفوعة',
             };
             if (PACKAGE_PROVIDERS.has(provider)) {
-                section.style.display = 'block';
+                section.classList.toggle('visible', subscriptionsOpen);
                 if (title) title.textContent = providerNames[provider] || 'الباقات المدفوعة';
                 loadPackagesAndBalance(provider);
             } else if (provider === 'phone_gateway') {
-                section.style.display = 'block';
+                section.classList.toggle('visible', subscriptionsOpen);
                 if (title) title.textContent = 'بوابة الهاتف - رصيد الشريحة';
                 const balancePill = document.getElementById('balancePill');
                 const wrap = document.getElementById('balanceProgressWrap');
@@ -1243,7 +1315,7 @@
                 }
                 currentSubscriptionData = { has_active_subscription: true, remaining_sms: 9999999 };
             } else {
-                section.style.display = 'none';
+                section.classList.remove('visible');
             }
         }
 
@@ -1646,6 +1718,11 @@
                 } catch (_) {}
             }
 
+            if (startSendingBtn) {
+                startSendingBtn.disabled = true;
+                startSendingBtn.textContent = 'جاري بدء الإرسال...';
+            }
+
             const formData = new FormData();
             formData.append('excel_file', fileInput.files[0]);
             formData.append('sms_provider', provider);
@@ -1669,14 +1746,22 @@
 
                 if (data.error) {
                     showResult('error', 'خطأ: ' + data.error);
+                    resetSendingButton();
                     return;
                 }
 
                 checkJobStatus(data.job_id);
             } catch (err) {
                 showResult('error', 'فشل الاتصال بالخادم: ' + err.message);
+                resetSendingButton();
             }
         });
+
+        function resetSendingButton() {
+            if (!startSendingBtn) return;
+            startSendingBtn.disabled = false;
+            startSendingBtn.textContent = 'بدء الإرسال';
+        }
 
         async function checkJobStatus(jobId) {
             try {
@@ -1708,12 +1793,15 @@
                     if (PACKAGE_PROVIDERS.has(provider)) {
                         await loadPackagesAndBalance(provider);
                     }
+                    resetSendingButton();
                     return;
                 }
 
                 showResult('error', 'فشل: ' + (job.error || 'حدث خطأ غير معروف'));
+                resetSendingButton();
             } catch (err) {
                 showResult('error', 'تعذر قراءة حالة المهمة: ' + err.message);
+                resetSendingButton();
             }
         }
 
