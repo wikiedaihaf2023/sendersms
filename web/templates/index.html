@@ -1776,8 +1776,11 @@
 
                 if (job.status === 'completed') {
                     const stats = job.stats || {};
+                    const hasValidContacts = (stats.valid || 0) > 0;
+                    const resultTitle = hasValidContacts ? 'اكتملت المعالجة' : 'اكتملت المعالجة دون أرقام صالحة';
+                    const resultClass = hasValidContacts ? 'success' : 'error';
                     let successHtml = `
-                        <strong>تمت العملية بنجاح</strong><br>
+                        <strong>${resultTitle}</strong><br>
                         إجمالي: ${stats.total || 0} &nbsp;|&nbsp;
                         صالح: ${stats.valid || 0} &nbsp;|&nbsp;
                         غير صالح: ${stats.invalid || 0}<br>
@@ -1787,7 +1790,7 @@
                     if (stats.balance_error) {
                         successHtml += `<br><span style="color:#991b1b;font-weight:700;">⚠️ ${escapeHtml(stats.balance_error)}</span>`;
                     }
-                    showResult('success', successHtml);
+                    showResult(resultClass, successHtml);
                     renderReportTable(stats.report_rows || []);
                     const provider = document.querySelector('select[name="sms_provider"]').value;
                     if (PACKAGE_PROVIDERS.has(provider)) {
